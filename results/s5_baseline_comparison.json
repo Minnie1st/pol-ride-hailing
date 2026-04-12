@@ -1,0 +1,94 @@
+{
+  "metadata": {
+    "deployment_strategy": "Uniform Grid",
+    "deployment_count": 6000,
+    "attack_trials": 200,
+    "replay_trials": 200,
+    "legitimate_trials": 2052,
+    "d_ble": 100.0,
+    "d_th": 100.0,
+    "tau_rssi": -90.0,
+    "delta_t_max_ms": 35.0,
+    "baselines": {
+      "GPS-only": "Server-side geofence and time-window validation only; no witness attestations or replay-state tracking.",
+      "Simple PoL": "Single-witness proximity proof with witness-side checks, but without replay-state enforcement or anchoring.",
+      "Proposed": "Full protocol with N_w=4, replay-state enforcement, and anchoring support."
+    },
+    "notes": [
+      "Baseline comparison uses the F1-recommended deployment so that the schemes are compared under the same operational witness layout.",
+      "Replay comparison uses exact same-proof resubmission as the representative anti-replay stress case.",
+      "Collusion comparison models prover-prover collusion as BLE+BLE forwarding under the common delta_t_max threshold.",
+      "LAR denotes Legitimate Acceptance Rate."
+    ]
+  },
+  "rows": [
+    {
+      "scheme": "GPS-only",
+      "lar": 1.0,
+      "spoofing_attack_success_rate": 1.0,
+      "replay_attack_success_rate": 1.0,
+      "collusion_attack_success_rate": 1.0
+    },
+    {
+      "scheme": "Simple PoL",
+      "lar": 1.0,
+      "spoofing_attack_success_rate": 0.0,
+      "replay_attack_success_rate": 1.0,
+      "collusion_attack_success_rate": 0.515
+    },
+    {
+      "scheme": "Proposed",
+      "lar": 0.9532163742690059,
+      "spoofing_attack_success_rate": 0.0,
+      "replay_attack_success_rate": 0.0,
+      "collusion_attack_success_rate": 0.005
+    }
+  ],
+  "attack_rows": [
+    {
+      "scheme": "GPS-only",
+      "attack": "spoofing",
+      "attack_success_rate": 1.0
+    },
+    {
+      "scheme": "GPS-only",
+      "attack": "replay",
+      "attack_success_rate": 1.0
+    },
+    {
+      "scheme": "GPS-only",
+      "attack": "collusion",
+      "attack_success_rate": 1.0
+    },
+    {
+      "scheme": "Simple PoL",
+      "attack": "spoofing",
+      "attack_success_rate": 0.0
+    },
+    {
+      "scheme": "Simple PoL",
+      "attack": "replay",
+      "attack_success_rate": 1.0
+    },
+    {
+      "scheme": "Simple PoL",
+      "attack": "collusion",
+      "attack_success_rate": 0.515
+    },
+    {
+      "scheme": "Proposed",
+      "attack": "spoofing",
+      "attack_success_rate": 0.0
+    },
+    {
+      "scheme": "Proposed",
+      "attack": "replay",
+      "attack_success_rate": 0.0
+    },
+    {
+      "scheme": "Proposed",
+      "attack": "collusion",
+      "attack_success_rate": 0.005
+    }
+  ]
+}

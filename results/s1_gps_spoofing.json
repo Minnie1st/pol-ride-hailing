@@ -1,0 +1,91 @@
+{
+  "metadata": {
+    "trials_per_case": 200,
+    "n_w": 1,
+    "d_ble": 100.0,
+    "d_th": 100.0,
+    "tau_rssi": -90.0,
+    "delta_t_max_ms": 35.0,
+    "subscenario_a_distances_m": [
+      500,
+      1000,
+      5000,
+      10000
+    ],
+    "notes": [
+      "S1 uses the common physical-layer thresholds but a single-witness proof threshold (N_w=1) to isolate witness-side and verifier-side spoofing rejection mechanisms.",
+      "Subscenario A evaluates BLE reachability failure with candidate witnesses chosen around the claimed location.",
+      "Subscenario B separates witness-side distance rejection from verifier-side event-location rejection under the same d_ble, d_th, delta_t_max, and RSSI thresholds used elsewhere in the suite."
+    ]
+  },
+  "subscenario_a": [
+    {
+      "subscenario": "A",
+      "actual_distance_m": 500,
+      "trials": 200,
+      "detection_rate": 1.0,
+      "witness_side_fraction": 1.0,
+      "verifier_side_fraction": 0.0,
+      "reason_counts": {
+        "ble_unreachable": 200
+      }
+    },
+    {
+      "subscenario": "A",
+      "actual_distance_m": 1000,
+      "trials": 200,
+      "detection_rate": 1.0,
+      "witness_side_fraction": 1.0,
+      "verifier_side_fraction": 0.0,
+      "reason_counts": {
+        "ble_unreachable": 200
+      }
+    },
+    {
+      "subscenario": "A",
+      "actual_distance_m": 5000,
+      "trials": 200,
+      "detection_rate": 1.0,
+      "witness_side_fraction": 1.0,
+      "verifier_side_fraction": 0.0,
+      "reason_counts": {
+        "ble_unreachable": 200
+      }
+    },
+    {
+      "subscenario": "A",
+      "actual_distance_m": 10000,
+      "trials": 200,
+      "detection_rate": 1.0,
+      "witness_side_fraction": 1.0,
+      "verifier_side_fraction": 0.0,
+      "reason_counts": {
+        "ble_unreachable": 200
+      }
+    }
+  ],
+  "subscenario_b": [
+    {
+      "subscenario": "B",
+      "case": "witness_distance_check",
+      "trials": 200,
+      "detection_rate": 1.0,
+      "witness_side_fraction": 1.0,
+      "verifier_side_fraction": 0.0,
+      "reason_counts": {
+        "distance": 200
+      }
+    },
+    {
+      "subscenario": "B",
+      "case": "verifier_event_location_check",
+      "trials": 200,
+      "detection_rate": 1.0,
+      "witness_side_fraction": 0.0,
+      "verifier_side_fraction": 1.0,
+      "reason_counts": {
+        "spatial": 200
+      }
+    }
+  ]
+}

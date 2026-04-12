@@ -1,0 +1,125 @@
+{
+  "metadata": {
+    "batch_id": 1001,
+    "anchoring_model": "anchorBatch(bytes32 merkleRoot, uint256 batchId)",
+    "notes": [
+      "All audit scenarios retrieve the Merkle root through batch_id from the anchoring registry.",
+      "Proof-content tampering is modeled by mutating the proof object and recomputing the corresponding leaf commitment.",
+      "The missing-proof scenario models audit failure when the platform cannot return the off-chain proof record.",
+      "Complexity is validated via Merkle path length growth with batch size.",
+      "In the left panel, the valid-proof bar reports acceptance rate, whereas the other five bars report detection rate."
+    ]
+  },
+  "scenario_rows": [
+    {
+      "scenario": "valid_proof",
+      "trials": 128,
+      "accept_rate": 1.0,
+      "detection_rate": 0.0,
+      "reason_counts": {
+        "accept": 128
+      }
+    },
+    {
+      "scenario": "mutated_claim_location",
+      "trials": 128,
+      "accept_rate": 0.0,
+      "detection_rate": 1.0,
+      "reason_counts": {
+        "merkle_mismatch": 128
+      }
+    },
+    {
+      "scenario": "mutated_witness_timestamp",
+      "trials": 128,
+      "accept_rate": 0.0,
+      "detection_rate": 1.0,
+      "reason_counts": {
+        "merkle_mismatch": 128
+      }
+    },
+    {
+      "scenario": "missing_proof_record",
+      "trials": 128,
+      "accept_rate": 0.0,
+      "detection_rate": 1.0,
+      "reason_counts": {
+        "proof_unavailable": 128
+      }
+    },
+    {
+      "scenario": "wrong_merkle_path",
+      "trials": 128,
+      "accept_rate": 0.0,
+      "detection_rate": 1.0,
+      "reason_counts": {
+        "merkle_mismatch": 128
+      }
+    },
+    {
+      "scenario": "wrong_root_mapping",
+      "trials": 128,
+      "accept_rate": 0.0,
+      "detection_rate": 1.0,
+      "reason_counts": {
+        "merkle_mismatch": 128
+      }
+    }
+  ],
+  "complexity_rows": [
+    {
+      "batch_size": 8,
+      "avg_path_length": 3,
+      "expected_log2": 3,
+      "avg_elapsed_ms": 0.007104245014488697
+    },
+    {
+      "batch_size": 16,
+      "avg_path_length": 4,
+      "expected_log2": 4,
+      "avg_elapsed_ms": 0.012258000424480997
+    },
+    {
+      "batch_size": 32,
+      "avg_path_length": 5,
+      "expected_log2": 5,
+      "avg_elapsed_ms": 0.021936281882517505
+    },
+    {
+      "batch_size": 64,
+      "avg_path_length": 6,
+      "expected_log2": 6,
+      "avg_elapsed_ms": 0.03923437270714203
+    },
+    {
+      "batch_size": 128,
+      "avg_path_length": 7,
+      "expected_log2": 7,
+      "avg_elapsed_ms": 0.07390484279312659
+    },
+    {
+      "batch_size": 256,
+      "avg_path_length": 8,
+      "expected_log2": 8,
+      "avg_elapsed_ms": 0.14427722089749295
+    },
+    {
+      "batch_size": 512,
+      "avg_path_length": 9,
+      "expected_log2": 9,
+      "avg_elapsed_ms": 0.28339199980109697
+    },
+    {
+      "batch_size": 1024,
+      "avg_path_length": 10,
+      "expected_log2": 10,
+      "avg_elapsed_ms": 0.5755326574217179
+    },
+    {
+      "batch_size": 2048,
+      "avg_path_length": 11,
+      "expected_log2": 11,
+      "avg_elapsed_ms": 1.1443411895015743
+    }
+  ]
+}

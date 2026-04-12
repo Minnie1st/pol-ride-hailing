@@ -1,0 +1,4 @@
+scheme,lar,spoofing_attack_success_rate,replay_attack_success_rate,collusion_attack_success_rate
+GPS-only,1.0,1.0,1.0,1.0
+Simple PoL,1.0,0.0,1.0,0.515
+Proposed,0.953216,0.0,0.0,0.005

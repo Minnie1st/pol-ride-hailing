@@ -1,0 +1,22 @@
+{
+  "net_file": "/Users/minnie/pol_simulation/tartu/tartu.net.xml",
+  "seed": 42,
+  "min_incoming": 1,
+  "max_witnesses": 15000,
+  "network_node_count": 13077,
+  "incoming_threshold_counts": {
+    "1": 12663,
+    "2": 8670,
+    "3": 5307,
+    "4": 1600
+  },
+  "candidate_count_before_sampling": 12663,
+  "candidate_count_after_sampling": 12663,
+  "sampling_mode": "all_candidates",
+  "bounding_box": {
+    "lat_min": 58.346329392152235,
+    "lat_max": 58.42693236280821,
+    "lon_min": 26.656429434310603,
+    "lon_max": 26.79452288205851
+  }
+}

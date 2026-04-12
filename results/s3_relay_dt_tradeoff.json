@@ -1,0 +1,107 @@
+{
+  "metadata": {
+    "trials_per_point": 200,
+    "n_w": 1,
+    "d_ble": 100.0,
+    "d_th": 100.0,
+    "tau_rssi": -90.0,
+    "baseline_delta_t_max_ms": 35.0,
+    "notes": [
+      "S3 evaluates prover-prover collusion by modeling the attack as relay-assisted challenge-response forwarding under the common d_ble, d_th, and RSSI thresholds, while scanning only delta_t_max to calibrate the timing trade-off.",
+      "Honest RTT is modeled as BLE roundtrip plus signing time.",
+      "Relay RTT adds extra relay-path delay, either BLE+BLE or BLE+WiFi/LTE.",
+      "Honest prover positions are sampled within 5-19 m of the witness so that distance and RSSI plausibility remain consistent under the common thresholds."
+    ]
+  },
+  "rows": [
+    {
+      "dt_ms": 10,
+      "lar": 0.035,
+      "arr_ble_ble": 1.0,
+      "arr_ble_wifi": 1.0,
+      "arr_mean": 1.0
+    },
+    {
+      "dt_ms": 15,
+      "lar": 0.295,
+      "arr_ble_ble": 1.0,
+      "arr_ble_wifi": 1.0,
+      "arr_mean": 1.0
+    },
+    {
+      "dt_ms": 20,
+      "lar": 0.695,
+      "arr_ble_ble": 1.0,
+      "arr_ble_wifi": 1.0,
+      "arr_mean": 1.0
+    },
+    {
+      "dt_ms": 25,
+      "lar": 0.92,
+      "arr_ble_ble": 0.995,
+      "arr_ble_wifi": 1.0,
+      "arr_mean": 0.9975
+    },
+    {
+      "dt_ms": 30,
+      "lar": 0.995,
+      "arr_ble_ble": 0.995,
+      "arr_ble_wifi": 0.995,
+      "arr_mean": 0.995
+    },
+    {
+      "dt_ms": 35,
+      "lar": 1.0,
+      "arr_ble_ble": 0.915,
+      "arr_ble_wifi": 0.985,
+      "arr_mean": 0.95
+    },
+    {
+      "dt_ms": 40,
+      "lar": 1.0,
+      "arr_ble_ble": 0.83,
+      "arr_ble_wifi": 0.955,
+      "arr_mean": 0.8925
+    },
+    {
+      "dt_ms": 50,
+      "lar": 1.0,
+      "arr_ble_ble": 0.42000000000000004,
+      "arr_ble_wifi": 0.89,
+      "arr_mean": 0.655
+    },
+    {
+      "dt_ms": 60,
+      "lar": 1.0,
+      "arr_ble_ble": 0.07499999999999996,
+      "arr_ble_wifi": 0.7050000000000001,
+      "arr_mean": 0.39
+    },
+    {
+      "dt_ms": 80,
+      "lar": 1.0,
+      "arr_ble_ble": 0.0,
+      "arr_ble_wifi": 0.42500000000000004,
+      "arr_mean": 0.21250000000000002
+    },
+    {
+      "dt_ms": 100,
+      "lar": 1.0,
+      "arr_ble_ble": 0.0,
+      "arr_ble_wifi": 0.19499999999999995,
+      "arr_mean": 0.09749999999999998
+    },
+    {
+      "dt_ms": 120,
+      "lar": 1.0,
+      "arr_ble_ble": 0.0,
+      "arr_ble_wifi": 0.03500000000000003,
+      "arr_mean": 0.017500000000000016
+    }
+  ],
+  "recommended_range": {
+    "mode": "constraint_based",
+    "dt_min_ms": 30,
+    "dt_max_ms": 40
+  }
+}

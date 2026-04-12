@@ -1,0 +1,293 @@
+{
+  "metadata": {
+    "deployment_strategy": "Uniform Grid",
+    "deployment_count": 6000,
+    "n_w": 4,
+    "d_ble": 100.0,
+    "d_th": 100.0,
+    "tau_rssi": -90.0,
+    "delta_t_max_ms": 35.0,
+    "notes": [
+      "F2 counts witness-side proof requests only; it does not model queues, retries, or service delays.",
+      "Load is reported as requests per witness per hour over the simulated trace duration."
+    ]
+  },
+  "rows": [
+    {
+      "label": "c10",
+      "peak_concurrent_vehs": 11,
+      "max_requests_per_hour": 3.440860215053763,
+      "p95_requests_per_hour": 3.440860215053763,
+      "mean_nonzero_requests_per_hour": 1.8173011721398815,
+      "hotspots": [
+        {
+          "witness_id": "W_10681699608",
+          "lat": 58.38215166017713,
+          "lon": 26.6945356694089,
+          "requests_per_hour": 3.441
+        },
+        {
+          "witness_id": "W_11806589020",
+          "lat": 58.37929316908582,
+          "lon": 26.74220227215852,
+          "requests_per_hour": 3.441
+        },
+        {
+          "witness_id": "W_11806589027",
+          "lat": 58.37935616017701,
+          "lon": 26.742128115429075,
+          "requests_per_hour": 3.441
+        },
+        {
+          "witness_id": "W_11806589040",
+          "lat": 58.379364729706275,
+          "lon": 26.74214651996721,
+          "requests_per_hour": 3.441
+        },
+        {
+          "witness_id": "W_11806603758",
+          "lat": 58.38006750736663,
+          "lon": 26.74217661735583,
+          "requests_per_hour": 3.441
+        },
+        {
+          "witness_id": "W_11990537139",
+          "lat": 58.37472339689479,
+          "lon": 26.77971759977122,
+          "requests_per_hour": 3.441
+        },
+        {
+          "witness_id": "W_11990537146",
+          "lat": 58.37437880536104,
+          "lon": 26.779631015257976,
+          "requests_per_hour": 3.441
+        },
+        {
+          "witness_id": "W_1258704936",
+          "lat": 58.37602076958017,
+          "lon": 26.71747644705251,
+          "requests_per_hour": 3.441
+        },
+        {
+          "witness_id": "W_1914548352",
+          "lat": 58.363376953805435,
+          "lon": 26.688178839765165,
+          "requests_per_hour": 3.441
+        },
+        {
+          "witness_id": "W_330040495",
+          "lat": 58.38206337087972,
+          "lon": 26.694610819632835,
+          "requests_per_hour": 3.441
+        }
+      ]
+    },
+    {
+      "label": "c50",
+      "peak_concurrent_vehs": 52,
+      "max_requests_per_hour": 8.370146477563358,
+      "p95_requests_per_hour": 5.0220878865380145,
+      "mean_nonzero_requests_per_hour": 2.231727671305676,
+      "hotspots": [
+        {
+          "witness_id": "W_12142638065",
+          "lat": 58.37046731933182,
+          "lon": 26.70099540440697,
+          "requests_per_hour": 8.37
+        },
+        {
+          "witness_id": "W_cluster_12142638064_330045648",
+          "lat": 58.37046943606786,
+          "lon": 26.70128668289732,
+          "requests_per_hour": 8.37
+        },
+        {
+          "witness_id": "W_10882884663",
+          "lat": 58.367148267945666,
+          "lon": 26.693925497261837,
+          "requests_per_hour": 6.696
+        },
+        {
+          "witness_id": "W_10921776931",
+          "lat": 58.38606966206712,
+          "lon": 26.726185703168262,
+          "requests_per_hour": 6.696
+        },
+        {
+          "witness_id": "W_11861679088",
+          "lat": 58.36139086780023,
+          "lon": 26.737927716248883,
+          "requests_per_hour": 6.696
+        },
+        {
+          "witness_id": "W_12097272436",
+          "lat": 58.37800352618036,
+          "lon": 26.728941548565146,
+          "requests_per_hour": 6.696
+        },
+        {
+          "witness_id": "W_12142638066",
+          "lat": 58.37072130433198,
+          "lon": 26.700835469677248,
+          "requests_per_hour": 6.696
+        },
+        {
+          "witness_id": "W_3029578405",
+          "lat": 58.38304632804246,
+          "lon": 26.757633602709728,
+          "requests_per_hour": 6.696
+        },
+        {
+          "witness_id": "W_6304257809",
+          "lat": 58.37718482922674,
+          "lon": 26.683466530547314,
+          "requests_per_hour": 6.696
+        },
+        {
+          "witness_id": "W_6304257810",
+          "lat": 58.37718481198399,
+          "lon": 26.683568606473557,
+          "requests_per_hour": 6.696
+        }
+      ]
+    },
+    {
+      "label": "c100",
+      "peak_concurrent_vehs": 93,
+      "max_requests_per_hour": 18.88111888111888,
+      "p95_requests_per_hour": 6.293706293706294,
+      "mean_nonzero_requests_per_hour": 2.788906009244992,
+      "hotspots": [
+        {
+          "witness_id": "W_12097272436",
+          "lat": 58.37800352618036,
+          "lon": 26.728941548565146,
+          "requests_per_hour": 18.881
+        },
+        {
+          "witness_id": "W_6854135410",
+          "lat": 58.37803276996132,
+          "lon": 26.729009376312842,
+          "requests_per_hour": 18.881
+        },
+        {
+          "witness_id": "W_6854135439",
+          "lat": 58.37817037328188,
+          "lon": 26.72875748532542,
+          "requests_per_hour": 17.308
+        },
+        {
+          "witness_id": "W_9153101260",
+          "lat": 58.3840580811756,
+          "lon": 26.708447450517045,
+          "requests_per_hour": 14.161
+        },
+        {
+          "witness_id": "W_cluster_7563355310_7563355387_956710369",
+          "lat": 58.37607089014305,
+          "lon": 26.74927867966527,
+          "requests_per_hour": 14.161
+        },
+        {
+          "witness_id": "W_11742308427",
+          "lat": 58.37306877940466,
+          "lon": 26.77220068167259,
+          "requests_per_hour": 12.587
+        },
+        {
+          "witness_id": "W_11778781930",
+          "lat": 58.373094713287834,
+          "lon": 26.77259218584759,
+          "requests_per_hour": 12.587
+        },
+        {
+          "witness_id": "W_11780533615",
+          "lat": 58.37640325088397,
+          "lon": 26.762109851093655,
+          "requests_per_hour": 12.587
+        },
+        {
+          "witness_id": "W_6681139737",
+          "lat": 58.384006781067036,
+          "lon": 26.7084406912024,
+          "requests_per_hour": 12.587
+        },
+        {
+          "witness_id": "W_330044522",
+          "lat": 58.37906797445896,
+          "lon": 26.758883975506457,
+          "requests_per_hour": 11.014
+        }
+      ]
+    },
+    {
+      "label": "c200",
+      "peak_concurrent_vehs": 176,
+      "max_requests_per_hour": 30.476190476190474,
+      "p95_requests_per_hour": 9.142857142857142,
+      "mean_nonzero_requests_per_hour": 4.008999708832949,
+      "hotspots": [
+        {
+          "witness_id": "W_12097272436",
+          "lat": 58.37800352618036,
+          "lon": 26.728941548565146,
+          "requests_per_hour": 30.476
+        },
+        {
+          "witness_id": "W_6854135410",
+          "lat": 58.37803276996132,
+          "lon": 26.729009376312842,
+          "requests_per_hour": 30.476
+        },
+        {
+          "witness_id": "W_6854135439",
+          "lat": 58.37817037328188,
+          "lon": 26.72875748532542,
+          "requests_per_hour": 27.429
+        },
+        {
+          "witness_id": "W_6173231682",
+          "lat": 58.37252085565619,
+          "lon": 26.758210607504772,
+          "requests_per_hour": 21.333
+        },
+        {
+          "witness_id": "W_6854135430",
+          "lat": 58.37809336156093,
+          "lon": 26.729503230166245,
+          "requests_per_hour": 18.286
+        },
+        {
+          "witness_id": "W_8760610250",
+          "lat": 58.36901489042799,
+          "lon": 26.730915262412253,
+          "requests_per_hour": 18.286
+        },
+        {
+          "witness_id": "W_cluster_10681699633_418438750",
+          "lat": 58.38328080931776,
+          "lon": 26.691979218538638,
+          "requests_per_hour": 18.286
+        },
+        {
+          "witness_id": "W_11748506178",
+          "lat": 58.37009835769812,
+          "lon": 26.77349473886066,
+          "requests_per_hour": 16.762
+        },
+        {
+          "witness_id": "W_11838366403",
+          "lat": 58.383323085223715,
+          "lon": 26.691781161508477,
+          "requests_per_hour": 16.762
+        },
+        {
+          "witness_id": "W_12120437728",
+          "lat": 58.37802573512257,
+          "lon": 26.683850555826975,
+          "requests_per_hour": 16.762
+        }
+      ]
+    }
+  ]
+}

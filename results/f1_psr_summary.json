@@ -1,0 +1,425 @@
+{
+  "metadata": {
+    "n_w": 4,
+    "d_ble": 100.0,
+    "d_th": 100.0,
+    "tau_rssi": -90.0,
+    "delta_t_max_ms": 35.0,
+    "sim_duration_s": 4826.0,
+    "simplifications": [
+      "BLE RSSI is modeled via a log-distance path-loss model with Gaussian noise.",
+      "Verifier acceptance uses exact event coordinates and a narrow verification time window for honest cases."
+    ]
+  },
+  "rows": [
+    {
+      "strategy": "random",
+      "strategy_label": "Random",
+      "witness_count": 2000,
+      "overall_psr": 0.5258284600389863,
+      "accepted_events": 1079,
+      "total_events": 2052,
+      "per_event_psr": {
+        "driver_arrival": 0.49902534113060426,
+        "rider_pickup_presence": 0.5185185185185185,
+        "trip_completion": 0.5399610136452242,
+        "rider_dropoff_presence": 0.5458089668615984
+      },
+      "rejection_stage_counts": {
+        "witness": 973
+      },
+      "rejection_reason_counts": {
+        "witness:insufficient_witnesses": 678,
+        "witness:rssi": 294,
+        "witness:time_bound": 1
+      }
+    },
+    {
+      "strategy": "random",
+      "strategy_label": "Random",
+      "witness_count": 4000,
+      "overall_psr": 0.7782651072124757,
+      "accepted_events": 1597,
+      "total_events": 2052,
+      "per_event_psr": {
+        "driver_arrival": 0.7660818713450293,
+        "rider_pickup_presence": 0.7758284600389863,
+        "trip_completion": 0.7816764132553606,
+        "rider_dropoff_presence": 0.7894736842105263
+      },
+      "rejection_stage_counts": {
+        "witness": 455
+      },
+      "rejection_reason_counts": {
+        "witness:insufficient_witnesses": 309,
+        "witness:rssi": 145,
+        "witness:time_bound": 1
+      }
+    },
+    {
+      "strategy": "random",
+      "strategy_label": "Random",
+      "witness_count": 6000,
+      "overall_psr": 0.868421052631579,
+      "accepted_events": 1782,
+      "total_events": 2052,
+      "per_event_psr": {
+        "driver_arrival": 0.8635477582846004,
+        "rider_pickup_presence": 0.8713450292397661,
+        "trip_completion": 0.8674463937621832,
+        "rider_dropoff_presence": 0.8713450292397661
+      },
+      "rejection_stage_counts": {
+        "witness": 270
+      },
+      "rejection_reason_counts": {
+        "witness:insufficient_witnesses": 167,
+        "witness:rssi": 102,
+        "witness:time_bound": 1
+      }
+    },
+    {
+      "strategy": "random",
+      "strategy_label": "Random",
+      "witness_count": 8000,
+      "overall_psr": 0.9117933723196882,
+      "accepted_events": 1871,
+      "total_events": 2052,
+      "per_event_psr": {
+        "driver_arrival": 0.9200779727095516,
+        "rider_pickup_presence": 0.9200779727095516,
+        "trip_completion": 0.9103313840155945,
+        "rider_dropoff_presence": 0.8966861598440545
+      },
+      "rejection_stage_counts": {
+        "witness": 181
+      },
+      "rejection_reason_counts": {
+        "witness:insufficient_witnesses": 103,
+        "witness:rssi": 78
+      }
+    },
+    {
+      "strategy": "random",
+      "strategy_label": "Random",
+      "witness_count": 10000,
+      "overall_psr": 0.9385964912280702,
+      "accepted_events": 1926,
+      "total_events": 2052,
+      "per_event_psr": {
+        "driver_arrival": 0.9415204678362573,
+        "rider_pickup_presence": 0.9434697855750487,
+        "trip_completion": 0.935672514619883,
+        "rider_dropoff_presence": 0.9337231968810916
+      },
+      "rejection_stage_counts": {
+        "witness": 126
+      },
+      "rejection_reason_counts": {
+        "witness:insufficient_witnesses": 73,
+        "witness:rssi": 53
+      }
+    },
+    {
+      "strategy": "random",
+      "strategy_label": "Random",
+      "witness_count": 12000,
+      "overall_psr": 0.956140350877193,
+      "accepted_events": 1962,
+      "total_events": 2052,
+      "per_event_psr": {
+        "driver_arrival": 0.9571150097465887,
+        "rider_pickup_presence": 0.9590643274853801,
+        "trip_completion": 0.9512670565302144,
+        "rider_dropoff_presence": 0.9571150097465887
+      },
+      "rejection_stage_counts": {
+        "witness": 90
+      },
+      "rejection_reason_counts": {
+        "witness:insufficient_witnesses": 51,
+        "witness:rssi": 39
+      }
+    },
+    {
+      "strategy": "grid",
+      "strategy_label": "Uniform Grid",
+      "witness_count": 2000,
+      "overall_psr": 0.3001949317738791,
+      "accepted_events": 616,
+      "total_events": 2052,
+      "per_event_psr": {
+        "driver_arrival": 0.27680311890838205,
+        "rider_pickup_presence": 0.26705653021442494,
+        "trip_completion": 0.32748538011695905,
+        "rider_dropoff_presence": 0.32943469785575047
+      },
+      "rejection_stage_counts": {
+        "witness": 1436
+      },
+      "rejection_reason_counts": {
+        "witness:rssi": 633,
+        "witness:insufficient_witnesses": 803
+      }
+    },
+    {
+      "strategy": "grid",
+      "strategy_label": "Uniform Grid",
+      "witness_count": 4000,
+      "overall_psr": 0.9122807017543859,
+      "accepted_events": 1872,
+      "total_events": 2052,
+      "per_event_psr": {
+        "driver_arrival": 0.9083820662768031,
+        "rider_pickup_presence": 0.9161793372319688,
+        "trip_completion": 0.9142300194931774,
+        "rider_dropoff_presence": 0.9103313840155945
+      },
+      "rejection_stage_counts": {
+        "witness": 180
+      },
+      "rejection_reason_counts": {
+        "witness:rssi": 103,
+        "witness:insufficient_witnesses": 76,
+        "witness:time_bound": 1
+      }
+    },
+    {
+      "strategy": "grid",
+      "strategy_label": "Uniform Grid",
+      "witness_count": 6000,
+      "overall_psr": 0.9532163742690059,
+      "accepted_events": 1956,
+      "total_events": 2052,
+      "per_event_psr": {
+        "driver_arrival": 0.9610136452241715,
+        "rider_pickup_presence": 0.9532163742690059,
+        "trip_completion": 0.9512670565302144,
+        "rider_dropoff_presence": 0.9473684210526315
+      },
+      "rejection_stage_counts": {
+        "witness": 96
+      },
+      "rejection_reason_counts": {
+        "witness:rssi": 42,
+        "witness:insufficient_witnesses": 54
+      },
+      "accepted_per_hour": 1459.0965602983838
+    },
+    {
+      "strategy": "grid",
+      "strategy_label": "Uniform Grid",
+      "witness_count": 8000,
+      "overall_psr": 0.9556530214424951,
+      "accepted_events": 1961,
+      "total_events": 2052,
+      "per_event_psr": {
+        "driver_arrival": 0.9668615984405458,
+        "rider_pickup_presence": 0.9590643274853801,
+        "trip_completion": 0.9512670565302144,
+        "rider_dropoff_presence": 0.9454191033138402
+      },
+      "rejection_stage_counts": {
+        "witness": 91
+      },
+      "rejection_reason_counts": {
+        "witness:rssi": 47,
+        "witness:insufficient_witnesses": 44
+      }
+    },
+    {
+      "strategy": "grid",
+      "strategy_label": "Uniform Grid",
+      "witness_count": 10000,
+      "overall_psr": 0.9580896686159844,
+      "accepted_events": 1966,
+      "total_events": 2052,
+      "per_event_psr": {
+        "driver_arrival": 0.9610136452241715,
+        "rider_pickup_presence": 0.9707602339181286,
+        "trip_completion": 0.9512670565302144,
+        "rider_dropoff_presence": 0.949317738791423
+      },
+      "rejection_stage_counts": {
+        "witness": 86
+      },
+      "rejection_reason_counts": {
+        "witness:rssi": 43,
+        "witness:insufficient_witnesses": 43
+      }
+    },
+    {
+      "strategy": "grid",
+      "strategy_label": "Uniform Grid",
+      "witness_count": 12000,
+      "overall_psr": 0.9576023391812866,
+      "accepted_events": 1965,
+      "total_events": 2052,
+      "per_event_psr": {
+        "driver_arrival": 0.9610136452241715,
+        "rider_pickup_presence": 0.9649122807017544,
+        "trip_completion": 0.9512670565302144,
+        "rider_dropoff_presence": 0.9532163742690059
+      },
+      "rejection_stage_counts": {
+        "witness": 87
+      },
+      "rejection_reason_counts": {
+        "witness:rssi": 48,
+        "witness:insufficient_witnesses": 39
+      }
+    },
+    {
+      "strategy": "hotspot",
+      "strategy_label": "Heatmap-guided",
+      "witness_count": 2000,
+      "overall_psr": 0.3362573099415205,
+      "accepted_events": 690,
+      "total_events": 2052,
+      "per_event_psr": {
+        "driver_arrival": 0.3391812865497076,
+        "rider_pickup_presence": 0.34502923976608185,
+        "trip_completion": 0.32943469785575047,
+        "rider_dropoff_presence": 0.3313840155945419
+      },
+      "rejection_stage_counts": {
+        "witness": 1362
+      },
+      "rejection_reason_counts": {
+        "witness:insufficient_witnesses": 1262,
+        "witness:rssi": 98,
+        "witness:time_bound": 2
+      }
+    },
+    {
+      "strategy": "hotspot",
+      "strategy_label": "Heatmap-guided",
+      "witness_count": 4000,
+      "overall_psr": 0.5409356725146199,
+      "accepted_events": 1110,
+      "total_events": 2052,
+      "per_event_psr": {
+        "driver_arrival": 0.530214424951267,
+        "rider_pickup_presence": 0.5341130604288499,
+        "trip_completion": 0.5497076023391813,
+        "rider_dropoff_presence": 0.5497076023391813
+      },
+      "rejection_stage_counts": {
+        "witness": 942
+      },
+      "rejection_reason_counts": {
+        "witness:insufficient_witnesses": 790,
+        "witness:rssi": 152
+      }
+    },
+    {
+      "strategy": "hotspot",
+      "strategy_label": "Heatmap-guided",
+      "witness_count": 6000,
+      "overall_psr": 0.73635477582846,
+      "accepted_events": 1511,
+      "total_events": 2052,
+      "per_event_psr": {
+        "driver_arrival": 0.7485380116959064,
+        "rider_pickup_presence": 0.7387914230019493,
+        "trip_completion": 0.7290448343079922,
+        "rider_dropoff_presence": 0.7290448343079922
+      },
+      "rejection_stage_counts": {
+        "witness": 541
+      },
+      "rejection_reason_counts": {
+        "witness:rssi": 138,
+        "witness:insufficient_witnesses": 403
+      }
+    },
+    {
+      "strategy": "hotspot",
+      "strategy_label": "Heatmap-guided",
+      "witness_count": 8000,
+      "overall_psr": 0.8401559454191033,
+      "accepted_events": 1724,
+      "total_events": 2052,
+      "per_event_psr": {
+        "driver_arrival": 0.8460038986354775,
+        "rider_pickup_presence": 0.8460038986354775,
+        "trip_completion": 0.8382066276803118,
+        "rider_dropoff_presence": 0.8304093567251462
+      },
+      "rejection_stage_counts": {
+        "witness": 328
+      },
+      "rejection_reason_counts": {
+        "witness:insufficient_witnesses": 255,
+        "witness:rssi": 73
+      }
+    },
+    {
+      "strategy": "hotspot",
+      "strategy_label": "Heatmap-guided",
+      "witness_count": 10000,
+      "overall_psr": 0.9122807017543859,
+      "accepted_events": 1872,
+      "total_events": 2052,
+      "per_event_psr": {
+        "driver_arrival": 0.9083820662768031,
+        "rider_pickup_presence": 0.9142300194931774,
+        "trip_completion": 0.9142300194931774,
+        "rider_dropoff_presence": 0.9122807017543859
+      },
+      "rejection_stage_counts": {
+        "witness": 180
+      },
+      "rejection_reason_counts": {
+        "witness:insufficient_witnesses": 130,
+        "witness:rssi": 50
+      }
+    },
+    {
+      "strategy": "hotspot",
+      "strategy_label": "Heatmap-guided",
+      "witness_count": 12000,
+      "overall_psr": 0.956140350877193,
+      "accepted_events": 1962,
+      "total_events": 2052,
+      "per_event_psr": {
+        "driver_arrival": 0.9629629629629629,
+        "rider_pickup_presence": 0.9649122807017544,
+        "trip_completion": 0.9473684210526315,
+        "rider_dropoff_presence": 0.949317738791423
+      },
+      "rejection_stage_counts": {
+        "witness": 90
+      },
+      "rejection_reason_counts": {
+        "witness:rssi": 44,
+        "witness:insufficient_witnesses": 46
+      }
+    }
+  ],
+  "recommended_deployment": {
+    "mode": "psr_95",
+    "row": {
+      "strategy": "grid",
+      "strategy_label": "Uniform Grid",
+      "witness_count": 6000,
+      "overall_psr": 0.9532163742690059,
+      "accepted_events": 1956,
+      "total_events": 2052,
+      "per_event_psr": {
+        "driver_arrival": 0.9610136452241715,
+        "rider_pickup_presence": 0.9532163742690059,
+        "trip_completion": 0.9512670565302144,
+        "rider_dropoff_presence": 0.9473684210526315
+      },
+      "rejection_stage_counts": {
+        "witness": 96
+      },
+      "rejection_reason_counts": {
+        "witness:rssi": 42,
+        "witness:insufficient_witnesses": 54
+      },
+      "accepted_per_hour": 1459.0965602983838
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "metadata": {
+    "deployment_strategy": "Uniform Grid",
+    "deployment_count": 6000,
+    "accepted_proofs_per_hour": 1459.0965602983838,
+    "n_w": 4,
+    "d_ble": 100.0,
+    "d_th": 100.0,
+    "tau_rssi": -90.0,
+    "delta_t_max_ms": 35.0,
+    "anchor_batch_gas": 41000,
+    "anchoring_model": "anchorBatch(bytes32 merkleRoot, uint256 batchId)",
+    "delay_definition": "Average anchoring delay is modeled as T_batch / 2.",
+    "plot_note": "The left panel plots gas per proof against batch interval; the corresponding average anchoring delay is T_batch / 2.",
+    "gas_cost_source": "Parameterized anchorBatch gas input (--anchor-gas). Plug in a measured testnet value for empirical cost estimates.",
+    "cost_model_scope": "Gas per proof and delay are analytical estimates derived from accepted proofs/hour, batching interval, and the anchorBatch gas input."
+  },
+  "rows": [
+    {
+      "batch_minutes": 1,
+      "expected_batch_size": 24,
+      "gas_per_proof": 1708.3333333333333,
+      "avg_anchor_delay_s": 30.0,
+      "avg_build_time_ms": 0.018399994587525725
+    },
+    {
+      "batch_minutes": 5,
+      "expected_batch_size": 122,
+      "gas_per_proof": 336.0655737704918,
+      "avg_anchor_delay_s": 150.0,
+      "avg_build_time_ms": 0.0750665960367769
+    },
+    {
+      "batch_minutes": 15,
+      "expected_batch_size": 365,
+      "gas_per_proof": 112.32876712328768,
+      "avg_anchor_delay_s": 450.0,
+      "avg_build_time_ms": 0.22315800306387246
+    },
+    {
+      "batch_minutes": 30,
+      "expected_batch_size": 730,
+      "gas_per_proof": 56.16438356164384,
+      "avg_anchor_delay_s": 900.0,
+      "avg_build_time_ms": 0.7276252028532326
+    },
+    {
+      "batch_minutes": 60,
+      "expected_batch_size": 1459,
+      "gas_per_proof": 28.10143934201508,
+      "avg_anchor_delay_s": 1800.0,
+      "avg_build_time_ms": 1.3266499852761626
+    }
+  ],
+  "recommended_range": {
+    "mode": "latency_capped",
+    "batch_min_minutes": 15,
+    "batch_max_minutes": 30
+  }
+}

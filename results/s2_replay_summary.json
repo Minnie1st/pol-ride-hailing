@@ -1,0 +1,48 @@
+{
+  "metadata": {
+    "proofs_evaluated": 100,
+    "notes": [
+      "Replay scenarios are verifier-side evaluations of already accepted proofs.",
+      "The four scenarios are aligned with the protocol mechanisms: exact replay, same (order,event) with new session, different order/event reuse, and stale proof.",
+      "event_accepted corresponds to the verifier-side E_accepted registry keyed by (order_id, event)."
+    ]
+  },
+  "rows": [
+    {
+      "scenario": "exact_same_replay",
+      "expected_mechanism": "context_replay",
+      "trials": 100,
+      "rejection_rate": 1.0,
+      "observed_mechanisms": {
+        "context_replay": 100
+      }
+    },
+    {
+      "scenario": "same_order_event_new_session",
+      "expected_mechanism": "event_accepted",
+      "trials": 100,
+      "rejection_rate": 1.0,
+      "observed_mechanisms": {
+        "event_accepted": 100
+      }
+    },
+    {
+      "scenario": "different_order_event_reuse",
+      "expected_mechanism": "context_binding",
+      "trials": 100,
+      "rejection_rate": 1.0,
+      "observed_mechanisms": {
+        "context_binding": 100
+      }
+    },
+    {
+      "scenario": "stale_proof",
+      "expected_mechanism": "temporal",
+      "trials": 100,
+      "rejection_rate": 1.0,
+      "observed_mechanisms": {
+        "temporal": 100
+      }
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+scenario,expected_mechanism,trials,rejection_rate,observed_mechanisms
+exact_same_replay,context_replay,100,1.0,"{""context_replay"": 100}"
+same_order_event_new_session,event_accepted,100,1.0,"{""event_accepted"": 100}"
+different_order_event_reuse,context_binding,100,1.0,"{""context_binding"": 100}"
+stale_proof,temporal,100,1.0,"{""temporal"": 100}"
