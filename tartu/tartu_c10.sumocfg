@@ -1,0 +1,13 @@
+<configuration>
+    <input>
+        <net-file value="tartu.net.xml"/>
+        <route-files value="routes_c10.xml"/>
+    </input>
+    <time>
+        <begin value="0"/>
+        <end value="3600"/>
+    </time>
+    <processing>
+        <ignore-route-errors value="true"/>
+    </processing>
+</configuration>

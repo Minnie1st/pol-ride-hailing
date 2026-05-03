@@ -1,3 +1,9 @@
 matplotlib
+numpy
+scipy
 sumolib
 traci
+streamlit
+folium
+streamlit-folium
+pandas

@@ -2,6 +2,6 @@ scenario,trials,accept_rate,detection_rate,reason_counts
 valid_proof,128,1.0,0.0,"{""accept"": 128}"
 mutated_claim_location,128,0.0,1.0,"{""merkle_mismatch"": 128}"
 mutated_witness_timestamp,128,0.0,1.0,"{""merkle_mismatch"": 128}"
-missing_proof_record,128,0.0,1.0,"{""proof_unavailable"": 128}"
+missing_proof_record,128,0.0,1.0,"{""missing_anchor"": 128}"
 wrong_merkle_path,128,0.0,1.0,"{""merkle_mismatch"": 128}"
 wrong_root_mapping,128,0.0,1.0,"{""merkle_mismatch"": 128}"

@@ -47,6 +47,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib import colors as mcolors
 from matplotlib.lines import Line2D
+from matplotlib.collections import LineCollection
 import numpy as np
 from scipy.interpolate import PchipInterpolator
 
@@ -69,13 +70,15 @@ RESULTS_DIR = os.path.join(PROJECT_ROOT, "results")
 
 DEFAULT_SEED = 42
 DEFAULT_DT_VALUES_MS = [10, 15, 20, 25, 30, 35, 40, 50, 60, 80, 100, 120]
-DEFAULT_S1A_DISTANCES_M = [500, 1000, 5000, 10000]
+DEFAULT_S1_DISTANCES_M = [5, 20, 50, 70, 80, 90, 95, 100, 105, 110, 120, 200, 500, 1000, 5000]
 DEFAULT_F1_COUNTS = [2000, 4000, 6000, 8000, 10000, 12000]
 DEFAULT_BATCH_MINUTES = [1, 5, 15, 30, 60]
 DEFAULT_SECURITY_TRIALS = 200
 DEFAULT_REPLAY_TRIALS = 100
 DEFAULT_PROOF_POOL_SIZE = 256
 DEFAULT_ANCHOR_GAS = 41_000
+DEFAULT_S1_REPEATS = 30
+DEFAULT_S1_REPEAT_TRIALS = 30
 
 SSI = {
     "teal": "#009B9E",
@@ -229,11 +232,24 @@ def parse_args() -> argparse.Namespace:
         help="Replay-evaluation trials.",
     )
     parser.add_argument(
-        "--s1a-distances-m",
+        "--s1-distances-m",
         nargs="+",
+        dest="s1_distances_m",
         type=int,
-        default=DEFAULT_S1A_DISTANCES_M,
-        help="Actual prover-to-witness distances, in meters, for S1 subscenario A.",
+        default=DEFAULT_S1_DISTANCES_M,
+        help="Actual prover-to-witness distances, in meters, for the S1 GPS spoofing distance scan.",
+    )
+    parser.add_argument(
+        "--s1-repeats",
+        type=int,
+        default=DEFAULT_S1_REPEATS,
+        help="Independent repeated runs per S1 distance for error-bar estimation.",
+    )
+    parser.add_argument(
+        "--s1-repeat-trials",
+        type=int,
+        default=DEFAULT_S1_REPEAT_TRIALS,
+        help="Trials per repeated S1 run.",
     )
     parser.add_argument(
         "--proof-pool-size",
@@ -817,266 +833,365 @@ def experiment_s1_spoofing(all_witnesses: Sequence[WitnessNode], args: argparse.
 
     witness_pool = list(sorted(all_witnesses, key=lambda witness: witness.id))
     params = security_isolation_params(args)
-    trials = args.security_trials
+    s1_repeats = max(1, args.s1_repeats)
+    s1_repeat_trials = max(1, args.s1_repeat_trials)
 
-    sub_a_rows = []
-    for actual_distance_m in args.s1a_distances_m:
-        stage_counts = Counter()
-        reason_counts = Counter()
+    distance_rows = []
+    for actual_distance_m in args.s1_distances_m:
         detected = 0
+        repeat_detection_rates = []
+        total_trials = s1_repeats * s1_repeat_trials
 
-        for idx in range(trials):
-            witness = witness_pool[idx % len(witness_pool)]
-            claim_lat, claim_lon = offset_point(
-                witness.lat,
-                witness.lon,
-                5.0,
-                2 * math.pi * ((idx + 1) / (trials + 1)),
-            )
-            actual_lat, actual_lon = offset_point(
-                witness.lat,
-                witness.lon,
-                actual_distance_m,
-                2 * math.pi * ((idx + 7) / (trials + 3)),
-            )
+        for repeat_idx in range(s1_repeats):
+            detected_in_repeat = 0
 
-            stable_seed(args.seed, "s1a", actual_distance_m, idx)
-            proof_result = generate_proof(
-                prover_id=f"spoofA_{actual_distance_m}_{idx}",
-                actual_lat=actual_lat,
-                actual_lon=actual_lon,
-                claim_lat=claim_lat,
-                claim_lon=claim_lon,
-                timestamp=1000.0 + idx,
-                ctx={"scenario": "s1a", "trial": idx},
-                witnesses=[witness],
-                params=params,
-                candidate_mode="claim",
-            )
-
-            if not proof_result.success:
-                detected += 1
-                stage_counts["witness"] += 1
-                for check in proof_result.witness_checks:
-                    reason_counts[check.reason] += 1
-            else:
-                accepted, reason = verify_proof(
-                    proof_result.proof,
-                    expected_lat=actual_lat,
-                    expected_lon=actual_lon,
-                    expected_time_min=999.0,
-                    expected_time_max=1001.0 + idx,
-                    params=params,
-                    c_used=set(),
-                    expected_ctx={"scenario": "s1a", "trial": idx},
-                )
-                if not accepted:
-                    detected += 1
-                    stage_counts["verifier"] += 1
-                    reason_counts[reason] += 1
-
-        row = {
-            "subscenario": "A",
-            "actual_distance_m": actual_distance_m,
-            "trials": trials,
-            "detection_rate": detected / trials if trials else 0.0,
-            "witness_side_fraction": stage_counts["witness"] / trials if trials else 0.0,
-            "verifier_side_fraction": stage_counts["verifier"] / trials if trials else 0.0,
-            "reason_counts": dict(reason_counts),
-        }
-        sub_a_rows.append(row)
-        print(
-            f"  A @ {actual_distance_m:4d} m: detect={row['detection_rate']:.1%}, "
-            f"witness={row['witness_side_fraction']:.1%}, verifier={row['verifier_side_fraction']:.1%}"
-        )
-
-    sub_b_cases = []
-    case_configs = [
-        {
-            "case": "witness_distance_check",
-            "actual_distance_m": 10.0,
-            "claim_distance_m": params.d_th + 20.0,
-            "verify_expected": "witness_side",
-        },
-        {
-            "case": "verifier_event_location_check",
-            "actual_distance_m": 15.0,
-            "claim_distance_m": params.d_th - 1.0,
-            "expected_event_distance_m": 45.0,
-            "verify_expected": "verifier_side",
-        },
-    ]
-
-    for case_idx, case_cfg in enumerate(case_configs):
-        stage_counts = Counter()
-        reason_counts = Counter()
-        detected = 0
-        case_params = security_isolation_params(args)
-
-        for idx in range(trials):
-            witness = witness_pool[(idx * 17 + case_idx) % len(witness_pool)]
-            actual_bearing = math.pi
-            claim_bearing = 0.0
-            actual_lat, actual_lon = offset_point(
-                witness.lat,
-                witness.lon,
-                case_cfg["actual_distance_m"],
-                actual_bearing,
-            )
-            claim_lat, claim_lon = offset_point(
-                witness.lat,
-                witness.lon,
-                case_cfg["claim_distance_m"],
-                claim_bearing,
-            )
-            if "expected_event_distance_m" in case_cfg:
-                expected_lat, expected_lon = offset_point(
+            for trial_idx in range(s1_repeat_trials):
+                idx = repeat_idx * s1_repeat_trials + trial_idx
+                witness = witness_pool[idx % len(witness_pool)]
+                claim_lat, claim_lon = offset_point(
                     witness.lat,
                     witness.lon,
-                    case_cfg["expected_event_distance_m"],
-                    actual_bearing,
+                    5.0,
+                    2 * math.pi * ((idx + 1) / (total_trials + 1)),
                 )
-            else:
-                expected_lat, expected_lon = actual_lat, actual_lon
+                actual_lat, actual_lon = offset_point(
+                    witness.lat,
+                    witness.lon,
+                    actual_distance_m,
+                    2 * math.pi * ((idx + 7) / (total_trials + 3)),
+                )
 
-            stable_seed(args.seed, "s1b", case_cfg["case"], idx)
-            proof_result = generate_proof(
-                prover_id=f"spoofB_{case_idx}_{idx}",
-                actual_lat=actual_lat,
-                actual_lon=actual_lon,
-                claim_lat=claim_lat,
-                claim_lon=claim_lon,
-                timestamp=2000.0 + idx,
-                ctx={"scenario": "s1b", "case": case_cfg["case"], "trial": idx},
-                witnesses=[witness],
-                params=case_params,
-                candidate_mode="actual",
+                stable_seed(args.seed, "s1", actual_distance_m, repeat_idx, trial_idx)
+                proof_result = generate_proof(
+                    prover_id=f"spoof_s1_{actual_distance_m}_{repeat_idx}_{trial_idx}",
+                    actual_lat=actual_lat,
+                    actual_lon=actual_lon,
+                    claim_lat=claim_lat,
+                    claim_lon=claim_lon,
+                    timestamp=1000.0 + idx,
+                    ctx={"scenario": "s1", "repeat": repeat_idx, "trial": trial_idx},
+                    witnesses=[witness],
+                    params=params,
+                    candidate_mode="claim",
+                )
+
+                if not proof_result.success:
+                    detected += 1
+                    detected_in_repeat += 1
+                else:
+                    accepted, reason = verify_proof(
+                        proof_result.proof,
+                        expected_lat=actual_lat,
+                        expected_lon=actual_lon,
+                        expected_time_min=999.0,
+                        expected_time_max=1001.0 + idx,
+                        params=params,
+                        c_used=set(),
+                        expected_ctx={"scenario": "s1", "repeat": repeat_idx, "trial": trial_idx},
+                    )
+                    if not accepted:
+                        detected += 1
+                        detected_in_repeat += 1
+
+            repeat_detection_rates.append(
+                detected_in_repeat / s1_repeat_trials if s1_repeat_trials else 0.0
             )
 
-            if not proof_result.success:
-                detected += 1
-                stage_counts["witness"] += 1
-                reason_counts[first_reason(proof_result.rejection_reasons)] += 1
-            else:
-                accepted, reason = verify_proof(
-                    proof_result.proof,
-                    expected_lat=expected_lat,
-                    expected_lon=expected_lon,
-                    expected_time_min=1999.0 + idx,
-                    expected_time_max=2001.0 + idx,
-                    params=case_params,
-                    c_used=set(),
-                    expected_ctx={"scenario": "s1b", "case": case_cfg["case"], "trial": idx},
-                )
-                if not accepted:
-                    detected += 1
-                    stage_counts["verifier"] += 1
-                    reason_counts[reason] += 1
-
-        row = {
-            "subscenario": "B",
-            "case": case_cfg["case"],
-            "trials": trials,
-            "detection_rate": detected / trials if trials else 0.0,
-            "witness_side_fraction": stage_counts["witness"] / trials if trials else 0.0,
-            "verifier_side_fraction": stage_counts["verifier"] / trials if trials else 0.0,
-            "reason_counts": dict(reason_counts),
-        }
-        sub_b_cases.append(row)
-        print(
-            f"  B / {case_cfg['case']}: detect={row['detection_rate']:.1%}, "
-            f"witness={row['witness_side_fraction']:.1%}, verifier={row['verifier_side_fraction']:.1%}"
+        detection_rate = statistics.mean(repeat_detection_rates) if repeat_detection_rates else 0.0
+        detection_rate_std = (
+            statistics.stdev(repeat_detection_rates)
+            if len(repeat_detection_rates) > 1
+            else 0.0
+        )
+        detection_rate_ci95 = (
+            1.96 * detection_rate_std / math.sqrt(len(repeat_detection_rates))
+            if repeat_detection_rates
+            else 0.0
         )
 
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4.8))
+        row = {
+            "scenario": "S1",
+            "actual_distance_m": actual_distance_m,
+            "trials": total_trials,
+            "repeats": s1_repeats,
+            "trials_per_repeat": s1_repeat_trials,
+            "total_trials": total_trials,
+            "detection_rate": detection_rate,
+            "detection_rate_std": detection_rate_std,
+            "detection_rate_ci95": detection_rate_ci95,
+        }
+        distance_rows.append(row)
+        print(f"  S1 @ {actual_distance_m:4d} m: detect={row['detection_rate']:.1%}")
 
-    axes[0].plot(
-        [row["actual_distance_m"] for row in sub_a_rows],
-        [row["detection_rate"] * 100 for row in sub_a_rows],
-        marker="o",
+    x_values = [row["actual_distance_m"] for row in distance_rows]
+    y_values = [row["detection_rate"] * 100 for row in distance_rows]
+    y_errors = [row["detection_rate_ci95"] * 100 for row in distance_rows]
+    fig_a, (ax_a_low, ax_a_mid, ax_a_high) = plt.subplots(
+        1,
+        3,
+        figsize=(10.4, 4.8),
+        sharey=True,
+        gridspec_kw={"width_ratios": [1.1, 2.35, 0.9], "wspace": 0.055},
+    )
+    fig_a.patch.set_facecolor("white")
+    for ax in (ax_a_low, ax_a_mid, ax_a_high):
+        ax.set_facecolor("white")
+
+    x_all = np.asarray(x_values, dtype=float)
+    y_all = np.asarray(y_values, dtype=float)
+    err_all = np.asarray(y_errors, dtype=float)
+
+    low_mask = x_all <= 70.0
+    mid_mask = (x_all >= 80.0) & (x_all <= 120.0)
+    high_mask = x_all >= 200.0
+
+    x_low = x_all[low_mask]
+    y_low = y_all[low_mask]
+    err_low = err_all[low_mask]
+    x_mid = x_all[mid_mask]
+    y_mid = y_all[mid_mask]
+    err_mid = err_all[mid_mask]
+    x_high = x_all[high_mask]
+    y_high = y_all[high_mask]
+    err_high = err_all[high_mask]
+
+    if len(x_low) >= 3:
+        dense_x_low = np.linspace(x_low.min(), x_low.max(), max(len(x_low) * 40, len(x_low)))
+        dense_y_low = PchipInterpolator(x_low, y_low)(dense_x_low)
+        ax_a_low.plot(
+            dense_x_low,
+            np.clip(dense_y_low, 0.0, 100.0),
+            color=SSI["teal"],
+            linewidth=1.5,
+            solid_capstyle="round",
+            zorder=2,
+        )
+    else:
+        ax_a_low.plot(
+            x_low,
+            y_low,
+            color=SSI["teal"],
+            linewidth=1.5,
+            solid_capstyle="round",
+            zorder=2,
+        )
+
+    if len(x_mid) >= 3:
+        dense_x_mid = np.linspace(x_mid.min(), x_mid.max(), max(len(x_mid) * 40, len(x_mid)))
+        dense_y_mid = PchipInterpolator(x_mid, y_mid)(dense_x_mid)
+        ax_a_mid.plot(
+            dense_x_mid,
+            np.clip(dense_y_mid, 0.0, 100.0),
+            color=SSI["teal"],
+            linewidth=1.5,
+            solid_capstyle="round",
+            zorder=2,
+        )
+    else:
+        ax_a_mid.plot(
+            x_mid,
+            y_mid,
+            color=SSI["teal"],
+            linewidth=1.5,
+            solid_capstyle="round",
+            zorder=2,
+        )
+
+    if len(x_high) >= 3:
+        log_x_high = np.log10(x_high)
+        dense_log_x_high = np.linspace(log_x_high.min(), log_x_high.max(), max(len(x_high) * 40, len(x_high)))
+        dense_y_high = PchipInterpolator(log_x_high, y_high)(dense_log_x_high)
+        ax_a_high.plot(
+            np.power(10.0, dense_log_x_high),
+            np.clip(dense_y_high, 0.0, 100.0),
+            color=SSI["teal"],
+            linewidth=1.5,
+            solid_capstyle="round",
+            zorder=2,
+        )
+    else:
+        ax_a_high.plot(
+            x_high,
+            y_high,
+            color=SSI["teal"],
+            linewidth=1.5,
+            solid_capstyle="round",
+            zorder=2,
+        )
+
+    ax_a_low.errorbar(
+        x_low,
+        y_low,
+        yerr=err_low,
+        fmt="o",
         color=SSI["teal"],
-        linewidth=2.4,
-        markersize=6,
+        markerfacecolor="white",
+        markeredgecolor=SSI["teal"],
+        markeredgewidth=1.2,
+        linewidth=1.1,
+        elinewidth=0.95,
+        capsize=3.0,
+        markersize=5.0,
+        zorder=3,
     )
-    axes[0].set_xscale("log")
-    axes[0].set_xlabel("Actual Distance From Witness (m)")
-    axes[0].set_ylabel("Detection Rate (%)")
-    panel_title(axes[0], "A", "Claim-near, Actual-far")
-    axes[0].set_ylim(0, 105)
-    style_axes(axes[0], grid_axis="both")
-
-    labels = [row["case"] for row in sub_b_cases]
-    witness_values = [row["witness_side_fraction"] * 100 for row in sub_b_cases]
-    verifier_values = [row["verifier_side_fraction"] * 100 for row in sub_b_cases]
-    axes[1].bar(
-        labels,
-        witness_values,
+    ax_a_mid.errorbar(
+        x_mid,
+        y_mid,
+        yerr=err_mid,
+        fmt="o",
         color=SSI["teal"],
-        edgecolor="white",
-        linewidth=0.8,
-        label="Witness-side reject",
+        markerfacecolor="white",
+        markeredgecolor=SSI["teal"],
+        markeredgewidth=1.2,
+        linewidth=1.1,
+        elinewidth=0.95,
+        capsize=3.0,
+        markersize=5.0,
+        zorder=3,
     )
-    axes[1].bar(
-        labels,
-        verifier_values,
-        bottom=witness_values,
-        color=SSI["magenta"],
-        edgecolor="white",
-        linewidth=0.8,
-        label="Verifier-side reject",
+    ax_a_high.errorbar(
+        x_high,
+        y_high,
+        yerr=err_high,
+        fmt="o",
+        color=SSI["teal"],
+        markerfacecolor="white",
+        markeredgecolor=SSI["teal"],
+        markeredgewidth=1.2,
+        linewidth=1.1,
+        elinewidth=0.95,
+        capsize=3.0,
+        markersize=5.0,
+        zorder=3,
     )
-    axes[1].set_ylabel("Detection Mechanism Share (%)")
-    panel_title(axes[1], "B", "Actual-near, Claim-offset")
-    axes[1].set_ylim(0, 105)
-    axes[1].tick_params(axis="x", rotation=15)
-    style_axes(axes[1], grid_axis="y")
-    style_legend(axes[1])
 
-    finalize_figure(fig, "s1_gps_spoofing", "S1  GPS Spoofing Resistance")
+    for ax in (ax_a_low, ax_a_mid, ax_a_high):
+        ax.axvline(
+            params.d_ble,
+            color="#BFBFBF",
+            linestyle=(0, (4, 3)),
+            alpha=0.9,
+            linewidth=1.0,
+            zorder=1,
+        )
+        ax.set_ylim(0, 105)
+        ax.grid(True, axis="both", alpha=0.55, color=SSI["grid"], linestyle=(0, (4, 4)), linewidth=0.65)
+        for side in ("top", "right", "left", "bottom"):
+            ax.spines[side].set_visible(True)
+            ax.spines[side].set_color("black")
+            ax.spines[side].set_linewidth(1.0)
+        ax.tick_params(axis="both", labelsize=10.2, length=0)
+        for tick_label in ax.get_xticklabels() + ax.get_yticklabels():
+            tick_label.set_fontfamily("Times New Roman")
+
+    ax_a_low.set_xlim(0, 75)
+    ax_a_low.set_xticks([5, 20, 50, 70])
+    ax_a_low.set_xticklabels(["5", "20", "50", "70"])
+    ax_a_low.set_ylabel("Detection Rate (%)", fontfamily="Times New Roman", fontsize=11.5)
+
+    ax_a_mid.set_xlim(78, 122)
+    ax_a_mid.set_xticks([80, 90, 95, 100, 105, 110, 120])
+    ax_a_mid.set_xticklabels(["80", "90", "95", "100", "105", "110", "120"])
+    ax_a_mid.text(
+        99.2,
+        97.5,
+        r"$d_{ble}=100$ m",
+        fontsize=9.1,
+        fontfamily="Times New Roman",
+        color=SSI["text"],
+        ha="right",
+        va="top",
+        bbox={
+            "boxstyle": "round,pad=0.18",
+            "facecolor": "white",
+            "edgecolor": SSI["grid"],
+            "linewidth": 0.7,
+            "alpha": 0.95,
+        },
+        zorder=4,
+    )
+
+    ax_a_high.set_xscale("log", base=10)
+    high_ticks = [200, 500, 1000, 5000]
+    ax_a_high.set_xlim(180, 5_500)
+    ax_a_high.xaxis.set_major_locator(matplotlib.ticker.FixedLocator(high_ticks))
+    ax_a_high.xaxis.set_major_formatter(
+        matplotlib.ticker.FuncFormatter(
+            lambda value, pos: str(int(value)) if value in set(high_ticks) else ""
+        )
+    )
+    ax_a_high.xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
+    ax_a_mid.tick_params(labelleft=False)
+    ax_a_high.tick_params(labelleft=False)
+
+    fig_a.supxlabel("Actual Distance From Witness (m)", fontfamily="Times New Roman", fontsize=11.5)
+
+    ax_a_low.spines["right"].set_visible(False)
+    ax_a_mid.spines["left"].set_visible(False)
+    ax_a_mid.spines["right"].set_visible(False)
+    ax_a_high.spines["left"].set_visible(False)
+
+    d = 0.018
+    kwargs_low = dict(transform=ax_a_low.transAxes, color="black", clip_on=False, linewidth=1.2)
+    kwargs_mid = dict(transform=ax_a_mid.transAxes, color="black", clip_on=False, linewidth=1.2)
+    kwargs_high = dict(transform=ax_a_high.transAxes, color="black", clip_on=False, linewidth=1.2)
+    ax_a_low.plot((1 - d, 1 + d), (-d, +d), **kwargs_low)
+    ax_a_low.plot((1 - d, 1 + d), (1 - d, 1 + d), **kwargs_low)
+    ax_a_mid.plot((-d, +d), (-d, +d), **kwargs_mid)
+    ax_a_mid.plot((-d, +d), (1 - d, 1 + d), **kwargs_mid)
+    ax_a_mid.plot((1 - d, 1 + d), (-d, +d), **kwargs_mid)
+    ax_a_mid.plot((1 - d, 1 + d), (1 - d, 1 + d), **kwargs_mid)
+    ax_a_high.plot((-d, +d), (-d, +d), **kwargs_high)
+    ax_a_high.plot((-d, +d), (1 - d, 1 + d), **kwargs_high)
+
+    fig_a.subplots_adjust(left=0.085, right=0.99, bottom=0.18, top=0.985, wspace=0.08)
+    finalize_figure(fig_a, "s1_gps_spoofing", title=None, use_tight_layout=False)
 
     payload = {
         "metadata": {
-            "trials_per_case": trials,
+            "s1_repeats": s1_repeats,
+            "s1_trials_per_repeat": s1_repeat_trials,
             "n_w": params.n_w,
             "d_ble": params.d_ble,
             "d_th": params.d_th,
             "tau_rssi": params.tau_rssi,
             "delta_t_max_ms": params.delta_t_max * 1000.0,
-            "subscenario_a_distances_m": list(args.s1a_distances_m),
+            "s1_distances_m": list(args.s1_distances_m),
             "notes": [
                 "S1 uses the common physical-layer thresholds but a single-witness proof threshold (N_w=1) to isolate witness-side and verifier-side spoofing rejection mechanisms.",
-                "Subscenario A evaluates BLE reachability failure with candidate witnesses chosen around the claimed location.",
-                "Subscenario B separates witness-side distance rejection from verifier-side event-location rejection under the same d_ble, d_th, delta_t_max, and RSSI thresholds used elsewhere in the suite.",
+                "S1 evaluates BLE reachability failure with candidate witnesses chosen around the claimed location. Distances sweep across 15 points from 5 m to 5 km and deliberately cross the nominal BLE boundary at d_ble=100 m to expose the protocol's physical security edge.",
+                "Each S1 distance is evaluated over repeated runs so that the left-panel error bars report 95% confidence intervals of the detection rate.",
             ],
         },
-        "subscenario_a": sub_a_rows,
-        "subscenario_b": sub_b_cases,
+        "distance_scan": distance_rows,
     }
     save_json("s1_gps_spoofing.json", payload)
     save_csv(
         "s1_gps_spoofing.csv",
         [
-            "subscenario",
+            "scenario",
             "actual_distance_m",
-            "case",
             "trials",
+            "repeats",
+            "trials_per_repeat",
+            "total_trials",
             "detection_rate",
-            "witness_side_fraction",
-            "verifier_side_fraction",
-            "reason_counts",
+            "detection_rate_std",
+            "detection_rate_ci95",
         ],
         [
             {
-                "subscenario": row.get("subscenario"),
+                "scenario": row.get("scenario"),
                 "actual_distance_m": row.get("actual_distance_m", ""),
-                "case": row.get("case", ""),
-                "trials": row["trials"],
+                "trials": row.get("trials", ""),
+                "repeats": row.get("repeats", ""),
+                "trials_per_repeat": row.get("trials_per_repeat", ""),
+                "total_trials": row.get("total_trials", ""),
                 "detection_rate": round(row["detection_rate"], 6),
-                "witness_side_fraction": round(row["witness_side_fraction"], 6),
-                "verifier_side_fraction": round(row["verifier_side_fraction"], 6),
-                "reason_counts": json.dumps(row["reason_counts"], sort_keys=True),
+                "detection_rate_std": round(row.get("detection_rate_std", 0.0), 6),
+                "detection_rate_ci95": round(row.get("detection_rate_ci95", 0.0), 6),
             }
-            for row in [*sub_a_rows, *sub_b_cases]
+            for row in distance_rows
         ],
     )
     return payload
@@ -1322,6 +1437,8 @@ def experiment_s3_relay(all_witnesses: Sequence[WitnessNode], args: argparse.Nam
     fig.patch.set_facecolor("white")
     ax.set_facecolor("white")
     x = [row["dt_ms"] for row in rows]
+    x_arr = np.asarray(x, dtype=float)
+    x_dense = np.linspace(x_arr.min(), x_arr.max(), max(len(x) * 50, len(x)))
     series = [
         ("LAR", [row["lar"] * 100 for row in rows], SSI["teal"], "o"),
         ("ARR (BLE+BLE)", [row["arr_ble_ble"] * 100 for row in rows], SSI["mint"], "s"),
@@ -1329,21 +1446,34 @@ def experiment_s3_relay(all_witnesses: Sequence[WitnessNode], args: argparse.Nam
     ]
     legend_handles = []
     for label, values, color, marker in series:
-        ax.plot(
-            x,
-            values,
-            color=color,
-            linestyle="-",
-            linewidth=1.5,
-            solid_capstyle="round",
-            zorder=2,
-        )
+        y_arr = np.asarray(values, dtype=float)
+        if len(x_arr) >= 3:
+            y_smooth = np.clip(PchipInterpolator(x_arr, y_arr)(x_dense), 0.0, 100.0)
+            ax.plot(
+                x_dense,
+                y_smooth,
+                color=color,
+                linestyle="-",
+                linewidth=1.5,
+                solid_capstyle="round",
+                zorder=2,
+            )
+        else:
+            ax.plot(
+                x,
+                values,
+                color=color,
+                linestyle="-",
+                linewidth=1.5,
+                solid_capstyle="round",
+                zorder=2,
+            )
         ax.plot(
             x,
             values,
             linestyle="None",
             marker=marker,
-            markersize=5.8,
+            markersize=5.0,
             markerfacecolor="white",
             markeredgecolor=color,
             markeredgewidth=1.2,
@@ -1357,7 +1487,7 @@ def experiment_s3_relay(all_witnesses: Sequence[WitnessNode], args: argparse.Nam
                 linestyle="-",
                 linewidth=1.5,
                 marker=marker,
-                markersize=5.8,
+                markersize=5.0,
                 markerfacecolor="white",
                 markeredgecolor=color,
                 markeredgewidth=1.2,
@@ -1547,8 +1677,17 @@ def experiment_s4_audit(valid_proofs: Sequence[dict], args: argparse.Namespace) 
                 continue
 
             if scenario_name == "missing_proof_record":
-                detected += 1
-                reason_counts["proof_unavailable"] += 1
+                # The proof was accepted and exists in the platform database, but
+                # was deliberately omitted from the on-chain batch (e.g. to hide a
+                # fraudulent trip from audit).  The platform can only point the
+                # auditor at a batch_id that was never committed to the registry.
+                # audit_batch_membership looks up that batch_id, finds no stored
+                # root, and returns "missing_anchor" — detected.
+                absent_batch_id = batch_id + 9999  # never anchored
+                audit = audit_batch_membership(batch_registry, absent_batch_id, leaves, idx)
+                if not audit["accepted"]:
+                    detected += 1
+                reason_counts[audit["reason"]] += 1
                 continue
 
             if scenario_name == "wrong_merkle_path":
@@ -1632,7 +1771,7 @@ def experiment_s4_audit(valid_proofs: Sequence[dict], args: argparse.Namespace) 
         observed_values,
         linestyle="None",
         marker="o",
-        markersize=5.8,
+        markersize=5.0,
         markerfacecolor="white",
         markeredgecolor=SSI["teal"],
         markeredgewidth=1.2,
@@ -1651,7 +1790,7 @@ def experiment_s4_audit(valid_proofs: Sequence[dict], args: argparse.Namespace) 
         expected_values,
         linestyle="None",
         marker="s",
-        markersize=5.8,
+        markersize=5.0,
         markerfacecolor="white",
         markeredgecolor=SSI["magenta"],
         markeredgewidth=1.2,
@@ -1676,14 +1815,14 @@ def experiment_s4_audit(valid_proofs: Sequence[dict], args: argparse.Namespace) 
             Line2D(
                 [0], [0],
                 color=SSI["teal"], linestyle="-", linewidth=1.5,
-                marker="o", markersize=5.8, markerfacecolor="white",
+                marker="o", markersize=5.0, markerfacecolor="white",
                 markeredgecolor=SSI["teal"], markeredgewidth=1.2,
                 label="Observed path length",
             ),
             Line2D(
                 [0], [0],
                 color=SSI["magenta"], linestyle="--", linewidth=1.5,
-                marker="s", markersize=5.8, markerfacecolor="white",
+                marker="s", markersize=5.0, markerfacecolor="white",
                 markeredgecolor=SSI["magenta"], markeredgewidth=1.2,
                 label=r"$\lceil \log_2 n \rceil$",
             ),
@@ -1709,7 +1848,7 @@ def experiment_s4_audit(valid_proofs: Sequence[dict], args: argparse.Namespace) 
             "notes": [
                 "All audit scenarios retrieve the Merkle root through batch_id from the anchoring registry.",
                 "Proof-content tampering is modeled by mutating the proof object and recomputing the corresponding leaf commitment.",
-                "The missing-proof scenario models audit failure when the platform cannot return the off-chain proof record.",
+                "The missing-proof scenario models a proof that was accepted but deliberately excluded from the on-chain batch. The auditor queries a batch_id that was never committed (missing_anchor), demonstrating that omission is detectable via the registry.",
                 "Complexity is validated via Merkle path length growth with batch size.",
                 "In the left panel, the valid-proof bar reports acceptance rate, whereas the other five bars report detection rate.",
             ],
@@ -2170,6 +2309,7 @@ def experiment_f1(
 
     recommendation = choose_recommended_deployment(rows)
     recommended_row = recommendation["row"]
+    recommended_strategy = recommended_row["strategy"]
     sim_duration_s = main_summary["results"]["sim_duration_s"]
     recommendation["row"]["accepted_per_hour"] = (
         recommended_row["accepted_events"] / (sim_duration_s / 3600.0)
@@ -2190,21 +2330,36 @@ def experiment_f1(
         subset = [row for row in rows if row["strategy"] == strategy]
         x_values = [row["witness_count"] for row in subset]
         y_values = [row["overall_psr"] * 100 for row in subset]
-        ax.plot(
-            x_values,
-            y_values,
-            color=strategy_colors[strategy],
-            linestyle=strategy_linestyles[strategy],
-            linewidth=1.5,
-            solid_capstyle="round",
-            zorder=2,
-        )
+        x_arr = np.asarray(x_values, dtype=float)
+        y_arr = np.asarray(y_values, dtype=float)
+        if len(x_arr) >= 3:
+            x_dense = np.linspace(x_arr.min(), x_arr.max(), max(len(x_arr) * 50, len(x_arr)))
+            y_smooth = np.clip(PchipInterpolator(x_arr, y_arr)(x_dense), 0.0, 100.0)
+            ax.plot(
+                x_dense,
+                y_smooth,
+                color=strategy_colors[strategy],
+                linestyle=strategy_linestyles[strategy],
+                linewidth=1.5,
+                solid_capstyle="round",
+                zorder=2,
+            )
+        else:
+            ax.plot(
+                x_values,
+                y_values,
+                color=strategy_colors[strategy],
+                linestyle=strategy_linestyles[strategy],
+                linewidth=1.5,
+                solid_capstyle="round",
+                zorder=2,
+            )
         ax.plot(
             x_values,
             y_values,
             linestyle="None",
             marker=strategy_markers[strategy],
-            markersize=5.8,
+            markersize=5.0,
             markerfacecolor="white",
             markeredgecolor=strategy_colors[strategy],
             markeredgewidth=1.2,
@@ -2218,7 +2373,7 @@ def experiment_f1(
                 linestyle=strategy_linestyles[strategy],
                 linewidth=1.5,
                 marker=strategy_markers[strategy],
-                markersize=5.8,
+                markersize=5.0,
                 markerfacecolor="white",
                 markeredgecolor=strategy_colors[strategy],
                 markeredgewidth=1.2,
@@ -2228,11 +2383,11 @@ def experiment_f1(
     ax.scatter(
         [recommended_row["witness_count"]],
         [recommended_row["overall_psr"] * 100],
-        s=68,
-        facecolors=strategy_colors["grid"],
-        edgecolors=strategy_colors["grid"],
+        s=25,
+        facecolors=strategy_colors[recommended_strategy],
+        edgecolors=strategy_colors[recommended_strategy],
         linewidths=1.0,
-        marker="s",
+        marker=strategy_markers[recommended_strategy],
         zorder=4,
     )
     ax.axhline(95, color="black", linestyle=(0, (4, 3)), alpha=0.85, linewidth=0.95, zorder=1)
@@ -2262,15 +2417,43 @@ def experiment_f1(
     for label in ax.get_xticklabels() + ax.get_yticklabels():
         label.set_fontfamily("Times New Roman")
 
+    if recommendation["mode"] == "psr_95":
+        recommendation_label = (
+            f"{recommended_row['strategy_label']} first exceeds 95% PSR\n"
+            f"at {recommended_row['witness_count']:,} witnesses "
+            f"(PSR = {recommended_row['overall_psr'] * 100:.1f}%)"
+        )
+    else:
+        recommendation_label = (
+            f"Best available deployment: {recommended_row['strategy_label']}\n"
+            f"at {recommended_row['witness_count']:,} witnesses "
+            f"(PSR = {recommended_row['overall_psr'] * 100:.1f}%)"
+        )
+
+    x_min = min(args.f1_counts)
+    x_max = max(args.f1_counts)
+    x_span = x_max - x_min
+    recommended_x = recommended_row["witness_count"]
+    recommended_y = recommended_row["overall_psr"] * 100
+
+    if recommended_x <= x_min + 0.55 * x_span:
+        text_x = recommended_x + 0.115 * x_span
+        text_ha = "left"
+    else:
+        text_x = recommended_x - 0.16 * x_span
+        text_ha = "right"
+
+    text_y = max(22.0, min(78.0, recommended_y - 25.0))
+
     ax.annotate(
-        "Uniform Grid first exceeds 95% PSR\nat 6,000 witnesses (PSR = 95.3%)",
+        recommendation_label,
         xy=(recommended_row["witness_count"], recommended_row["overall_psr"] * 100),
-        xytext=(7150, 70.0),
+        xytext=(text_x, text_y),
         textcoords="data",
         fontsize=8.7,
         fontfamily="Times New Roman",
         color=SSI["text"],
-        ha="left",
+        ha=text_ha,
         va="center",
         bbox={
             "boxstyle": "round,pad=0.2",
@@ -2354,6 +2537,31 @@ def experiment_f1(
         f"({recommendation['mode']}, PSR={recommended_row['overall_psr']:.1%})"
     )
     return payload
+
+
+def load_sumo_road_lines(net_path: str) -> list:
+    """Extract edge shapes from a SUMO .net.xml and return as lon/lat polylines.
+
+    Returns a list of polylines, each polyline being a list of (lon, lat) tuples.
+    Returns an empty list if sumolib is unavailable or the file does not exist.
+    """
+    try:
+        import sumolib  # type: ignore
+    except ImportError:
+        print("  [F2] sumolib not found – road network background skipped")
+        return []
+    if not os.path.exists(net_path):
+        print(f"  [F2] network file not found: {net_path} – background skipped")
+        return []
+    net = sumolib.net.readNet(net_path, withInternal=False)
+    lines = []
+    for edge in net.getEdges():
+        shape = edge.getShape()
+        if len(shape) < 2:
+            continue
+        lines.append([net.convertXY2LonLat(x, y) for x, y in shape])
+    print(f"  [F2] loaded {len(lines)} road segments from {os.path.basename(net_path)}")
+    return lines
 
 
 def experiment_f2(
@@ -2459,8 +2667,20 @@ def experiment_f2(
     lon_pad = max((max(all_lons) - min(all_lons)) * 0.03, 0.003)
     lat_pad = max((max(all_lats) - min(all_lats)) * 0.03, 0.003)
 
+    net_path = os.path.join(PROJECT_ROOT, "tartu", "tartu.net.xml")
+    road_lines = load_sumo_road_lines(net_path)
+
     fig, axes = plt.subplots(2, 2, figsize=(11.3, 7.7))
     for axis, panel, panel_label in zip(axes.flat, panel_data, panel_labels):
+        if road_lines:
+            lc = LineCollection(
+                road_lines,
+                colors="#C8C8C8",
+                linewidths=0.45,
+                alpha=0.55,
+                zorder=0,
+            )
+            axis.add_collection(lc)
         axis.scatter(
             all_lons,
             all_lats,
@@ -2485,6 +2705,19 @@ def experiment_f2(
                 edgecolors="none",
                 zorder=2,
             )
+        axis.text(
+            0.985,
+            0.972,
+            "Tartu, Estonia",
+            transform=axis.transAxes,
+            ha="right",
+            va="top",
+            fontfamily="Times New Roman",
+            fontsize=8.5,
+            color=SSI["text"],
+            bbox=dict(facecolor="white", alpha=0.72, edgecolor="none", pad=2.2),
+            zorder=4,
+        )
         axis.set_title(
             f"{panel_label}  {panel['label']} (peak = {panel['peak_concurrent_vehs']})",
             loc="left",
@@ -2528,6 +2761,8 @@ def experiment_f2(
 
     fig, ax = plt.subplots(figsize=(8.0, 4.7))
     x = [row["peak_concurrent_vehs"] for row in load_rows]
+    x_arr_f2 = np.asarray(x, dtype=float)
+    x_dense_f2 = np.linspace(x_arr_f2.min(), x_arr_f2.max(), max(len(x_arr_f2) * 50, len(x_arr_f2)))
     series = [
         ("Max", [row["max_requests_per_hour"] for row in load_rows], SSI["teal"], "o"),
         ("P95", [row["p95_requests_per_hour"] for row in load_rows], SSI["magenta"], "s"),
@@ -2535,21 +2770,34 @@ def experiment_f2(
     ]
     legend_handles = []
     for label, values, color, marker in series:
-        ax.plot(
-            x,
-            values,
-            color=color,
-            linestyle="-",
-            linewidth=1.5,
-            solid_capstyle="round",
-            zorder=2,
-        )
+        y_arr_f2 = np.asarray(values, dtype=float)
+        if len(x_arr_f2) >= 3:
+            y_smooth_f2 = np.clip(PchipInterpolator(x_arr_f2, y_arr_f2)(x_dense_f2), 0.0, None)
+            ax.plot(
+                x_dense_f2,
+                y_smooth_f2,
+                color=color,
+                linestyle="-",
+                linewidth=1.5,
+                solid_capstyle="round",
+                zorder=2,
+            )
+        else:
+            ax.plot(
+                x,
+                values,
+                color=color,
+                linestyle="-",
+                linewidth=1.5,
+                solid_capstyle="round",
+                zorder=2,
+            )
         ax.plot(
             x,
             values,
             linestyle="None",
             marker=marker,
-            markersize=5.8,
+            markersize=5.0,
             markerfacecolor="white",
             markeredgecolor=color,
             markeredgewidth=1.2,
@@ -2563,7 +2811,7 @@ def experiment_f2(
                 linestyle="-",
                 linewidth=1.5,
                 marker=marker,
-                markersize=5.8,
+                markersize=5.0,
                 markerfacecolor="white",
                 markeredgecolor=color,
                 markeredgewidth=1.2,
@@ -2716,22 +2964,20 @@ def experiment_f3(
     x_values = [row["batch_minutes"] for row in rows]
     gas_values = [row["gas_per_proof"] for row in rows]
     build_values = [row["avg_build_time_ms"] for row in rows]
+    x_arr_f3 = np.asarray(x_values, dtype=float)
+    x_dense_f3 = np.linspace(x_arr_f3.min(), x_arr_f3.max(), max(len(x_arr_f3) * 50, len(x_arr_f3)))
 
-    axes[0].plot(
-        x_values,
-        gas_values,
-        color=SSI["teal"],
-        linestyle="-",
-        linewidth=1.5,
-        solid_capstyle="round",
-        zorder=2,
-    )
+    if len(x_arr_f3) >= 3:
+        gas_smooth = np.clip(PchipInterpolator(x_arr_f3, np.asarray(gas_values))(x_dense_f3), 0.0, None)
+        axes[0].plot(x_dense_f3, gas_smooth, color=SSI["teal"], linestyle="-", linewidth=1.5, solid_capstyle="round", zorder=2)
+    else:
+        axes[0].plot(x_values, gas_values, color=SSI["teal"], linestyle="-", linewidth=1.5, solid_capstyle="round", zorder=2)
     axes[0].plot(
         x_values,
         gas_values,
         linestyle="None",
         marker="o",
-        markersize=5.8,
+        markersize=5.0,
         markerfacecolor="white",
         markeredgecolor=SSI["teal"],
         markeredgewidth=1.2,
@@ -2750,21 +2996,17 @@ def experiment_f3(
     for tick_label in axes[0].get_xticklabels() + axes[0].get_yticklabels():
         tick_label.set_fontfamily("Times New Roman")
 
-    axes[1].plot(
-        x_values,
-        build_values,
-        color=SSI["magenta"],
-        linestyle="-",
-        linewidth=1.5,
-        solid_capstyle="round",
-        zorder=2,
-    )
+    if len(x_arr_f3) >= 3:
+        build_smooth = np.clip(PchipInterpolator(x_arr_f3, np.asarray(build_values))(x_dense_f3), 0.0, None)
+        axes[1].plot(x_dense_f3, build_smooth, color=SSI["magenta"], linestyle="-", linewidth=1.5, solid_capstyle="round", zorder=2)
+    else:
+        axes[1].plot(x_values, build_values, color=SSI["magenta"], linestyle="-", linewidth=1.5, solid_capstyle="round", zorder=2)
     axes[1].plot(
         x_values,
         build_values,
         linestyle="None",
         marker="s",
-        markersize=5.8,
+        markersize=5.0,
         markerfacecolor="white",
         markeredgecolor=SSI["magenta"],
         markeredgewidth=1.2,

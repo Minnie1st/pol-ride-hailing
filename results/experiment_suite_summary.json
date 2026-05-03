@@ -1,8 +1,495 @@
 {
   "seed": 42,
   "experiments": [
-    "f3"
+    "f1",
+    "f2",
+    "f3",
+    "s1",
+    "s2",
+    "s3",
+    "s4",
+    "s5"
   ],
+  "s1": {
+    "metadata": {
+      "s1_repeats": 30,
+      "s1_trials_per_repeat": 30,
+      "n_w": 1,
+      "d_ble": 100.0,
+      "d_th": 100.0,
+      "tau_rssi": -90.0,
+      "delta_t_max_ms": 35.0,
+      "s1_distances_m": [
+        5,
+        20,
+        50,
+        70,
+        80,
+        90,
+        95,
+        100,
+        105,
+        110,
+        120,
+        200,
+        500,
+        1000,
+        5000
+      ],
+      "notes": [
+        "S1 uses the common physical-layer thresholds but a single-witness proof threshold (N_w=1) to isolate witness-side and verifier-side spoofing rejection mechanisms.",
+        "S1 evaluates BLE reachability failure with candidate witnesses chosen around the claimed location. Distances sweep across 15 points from 5 m to 5 km and deliberately cross the nominal BLE boundary at d_ble=100 m to expose the protocol's physical security edge.",
+        "Each S1 distance is evaluated over repeated runs so that the left-panel error bars report 95% confidence intervals of the detection rate."
+      ]
+    },
+    "distance_scan": [
+      {
+        "scenario": "S1",
+        "actual_distance_m": 5,
+        "trials": 900,
+        "repeats": 30,
+        "trials_per_repeat": 30,
+        "total_trials": 900,
+        "detection_rate": 0.0,
+        "detection_rate_std": 0.0,
+        "detection_rate_ci95": 0.0
+      },
+      {
+        "scenario": "S1",
+        "actual_distance_m": 20,
+        "trials": 900,
+        "repeats": 30,
+        "trials_per_repeat": 30,
+        "total_trials": 900,
+        "detection_rate": 0.0,
+        "detection_rate_std": 0.0,
+        "detection_rate_ci95": 0.0
+      },
+      {
+        "scenario": "S1",
+        "actual_distance_m": 50,
+        "trials": 900,
+        "repeats": 30,
+        "trials_per_repeat": 30,
+        "total_trials": 900,
+        "detection_rate": 0.0044444444444444444,
+        "detection_rate_std": 0.011524863454725347,
+        "detection_rate_ci95": 0.004124119421729061
+      },
+      {
+        "scenario": "S1",
+        "actual_distance_m": 70,
+        "trials": 900,
+        "repeats": 30,
+        "trials_per_repeat": 30,
+        "total_trials": 900,
+        "detection_rate": 0.08666666666666667,
+        "detection_rate_std": 0.046814216657187095,
+        "detection_rate_ci95": 0.01675225228371597
+      },
+      {
+        "scenario": "S1",
+        "actual_distance_m": 80,
+        "trials": 900,
+        "repeats": 30,
+        "trials_per_repeat": 30,
+        "total_trials": 900,
+        "detection_rate": 0.2011111111111111,
+        "detection_rate_std": 0.09117510134901169,
+        "detection_rate_ci95": 0.032626590998559954
+      },
+      {
+        "scenario": "S1",
+        "actual_distance_m": 90,
+        "trials": 900,
+        "repeats": 30,
+        "trials_per_repeat": 30,
+        "total_trials": 900,
+        "detection_rate": 0.34555555555555556,
+        "detection_rate_std": 0.09999361410006054,
+        "detection_rate_ci95": 0.0357822552587256
+      },
+      {
+        "scenario": "S1",
+        "actual_distance_m": 95,
+        "trials": 900,
+        "repeats": 30,
+        "trials_per_repeat": 30,
+        "total_trials": 900,
+        "detection_rate": 0.43222222222222223,
+        "detection_rate_std": 0.07137582434833838,
+        "detection_rate_ci95": 0.02554151071665945
+      },
+      {
+        "scenario": "S1",
+        "actual_distance_m": 100,
+        "trials": 900,
+        "repeats": 30,
+        "trials_per_repeat": 30,
+        "total_trials": 900,
+        "detection_rate": 0.7544444444444445,
+        "detection_rate_std": 0.07349164382000543,
+        "detection_rate_ci95": 0.026298646990790046
+      },
+      {
+        "scenario": "S1",
+        "actual_distance_m": 105,
+        "trials": 900,
+        "repeats": 30,
+        "trials_per_repeat": 30,
+        "total_trials": 900,
+        "detection_rate": 1.0,
+        "detection_rate_std": 0.0,
+        "detection_rate_ci95": 0.0
+      },
+      {
+        "scenario": "S1",
+        "actual_distance_m": 110,
+        "trials": 900,
+        "repeats": 30,
+        "trials_per_repeat": 30,
+        "total_trials": 900,
+        "detection_rate": 1.0,
+        "detection_rate_std": 0.0,
+        "detection_rate_ci95": 0.0
+      },
+      {
+        "scenario": "S1",
+        "actual_distance_m": 120,
+        "trials": 900,
+        "repeats": 30,
+        "trials_per_repeat": 30,
+        "total_trials": 900,
+        "detection_rate": 1.0,
+        "detection_rate_std": 0.0,
+        "detection_rate_ci95": 0.0
+      },
+      {
+        "scenario": "S1",
+        "actual_distance_m": 200,
+        "trials": 900,
+        "repeats": 30,
+        "trials_per_repeat": 30,
+        "total_trials": 900,
+        "detection_rate": 1.0,
+        "detection_rate_std": 0.0,
+        "detection_rate_ci95": 0.0
+      },
+      {
+        "scenario": "S1",
+        "actual_distance_m": 500,
+        "trials": 900,
+        "repeats": 30,
+        "trials_per_repeat": 30,
+        "total_trials": 900,
+        "detection_rate": 1.0,
+        "detection_rate_std": 0.0,
+        "detection_rate_ci95": 0.0
+      },
+      {
+        "scenario": "S1",
+        "actual_distance_m": 1000,
+        "trials": 900,
+        "repeats": 30,
+        "trials_per_repeat": 30,
+        "total_trials": 900,
+        "detection_rate": 1.0,
+        "detection_rate_std": 0.0,
+        "detection_rate_ci95": 0.0
+      },
+      {
+        "scenario": "S1",
+        "actual_distance_m": 5000,
+        "trials": 900,
+        "repeats": 30,
+        "trials_per_repeat": 30,
+        "total_trials": 900,
+        "detection_rate": 1.0,
+        "detection_rate_std": 0.0,
+        "detection_rate_ci95": 0.0
+      }
+    ]
+  },
+  "s2": {
+    "metadata": {
+      "proofs_evaluated": 100,
+      "notes": [
+        "Replay scenarios are verifier-side evaluations of already accepted proofs.",
+        "The four scenarios are aligned with the protocol mechanisms: exact replay, same (order,event) with new session, different order/event reuse, and stale proof.",
+        "event_accepted corresponds to the verifier-side E_accepted registry keyed by (order_id, event)."
+      ]
+    },
+    "rows": [
+      {
+        "scenario": "exact_same_replay",
+        "expected_mechanism": "context_replay",
+        "trials": 100,
+        "rejection_rate": 1.0,
+        "observed_mechanisms": {
+          "context_replay": 100
+        }
+      },
+      {
+        "scenario": "same_order_event_new_session",
+        "expected_mechanism": "event_accepted",
+        "trials": 100,
+        "rejection_rate": 1.0,
+        "observed_mechanisms": {
+          "event_accepted": 100
+        }
+      },
+      {
+        "scenario": "different_order_event_reuse",
+        "expected_mechanism": "context_binding",
+        "trials": 100,
+        "rejection_rate": 1.0,
+        "observed_mechanisms": {
+          "context_binding": 100
+        }
+      },
+      {
+        "scenario": "stale_proof",
+        "expected_mechanism": "temporal",
+        "trials": 100,
+        "rejection_rate": 1.0,
+        "observed_mechanisms": {
+          "temporal": 100
+        }
+      }
+    ]
+  },
+  "s3": {
+    "metadata": {
+      "trials_per_point": 200,
+      "n_w": 1,
+      "d_ble": 100.0,
+      "d_th": 100.0,
+      "tau_rssi": -90.0,
+      "baseline_delta_t_max_ms": 35.0,
+      "notes": [
+        "S3 evaluates prover-prover collusion by modeling the attack as relay-assisted challenge-response forwarding under the common d_ble, d_th, and RSSI thresholds, while scanning only delta_t_max to calibrate the timing trade-off.",
+        "Honest RTT is modeled as BLE roundtrip plus signing time.",
+        "Relay RTT adds extra relay-path delay, either BLE+BLE or BLE+WiFi/LTE.",
+        "Honest prover positions are sampled within 5-19 m of the witness so that distance and RSSI plausibility remain consistent under the common thresholds."
+      ]
+    },
+    "rows": [
+      {
+        "dt_ms": 10,
+        "lar": 0.035,
+        "arr_ble_ble": 1.0,
+        "arr_ble_wifi": 1.0,
+        "arr_mean": 1.0
+      },
+      {
+        "dt_ms": 15,
+        "lar": 0.295,
+        "arr_ble_ble": 1.0,
+        "arr_ble_wifi": 1.0,
+        "arr_mean": 1.0
+      },
+      {
+        "dt_ms": 20,
+        "lar": 0.695,
+        "arr_ble_ble": 1.0,
+        "arr_ble_wifi": 1.0,
+        "arr_mean": 1.0
+      },
+      {
+        "dt_ms": 25,
+        "lar": 0.92,
+        "arr_ble_ble": 0.995,
+        "arr_ble_wifi": 1.0,
+        "arr_mean": 0.9975
+      },
+      {
+        "dt_ms": 30,
+        "lar": 0.995,
+        "arr_ble_ble": 0.995,
+        "arr_ble_wifi": 0.995,
+        "arr_mean": 0.995
+      },
+      {
+        "dt_ms": 35,
+        "lar": 1.0,
+        "arr_ble_ble": 0.915,
+        "arr_ble_wifi": 0.985,
+        "arr_mean": 0.95
+      },
+      {
+        "dt_ms": 40,
+        "lar": 1.0,
+        "arr_ble_ble": 0.83,
+        "arr_ble_wifi": 0.955,
+        "arr_mean": 0.8925
+      },
+      {
+        "dt_ms": 50,
+        "lar": 1.0,
+        "arr_ble_ble": 0.42000000000000004,
+        "arr_ble_wifi": 0.89,
+        "arr_mean": 0.655
+      },
+      {
+        "dt_ms": 60,
+        "lar": 1.0,
+        "arr_ble_ble": 0.07499999999999996,
+        "arr_ble_wifi": 0.7050000000000001,
+        "arr_mean": 0.39
+      },
+      {
+        "dt_ms": 80,
+        "lar": 1.0,
+        "arr_ble_ble": 0.0,
+        "arr_ble_wifi": 0.42500000000000004,
+        "arr_mean": 0.21250000000000002
+      },
+      {
+        "dt_ms": 100,
+        "lar": 1.0,
+        "arr_ble_ble": 0.0,
+        "arr_ble_wifi": 0.19499999999999995,
+        "arr_mean": 0.09749999999999998
+      },
+      {
+        "dt_ms": 120,
+        "lar": 1.0,
+        "arr_ble_ble": 0.0,
+        "arr_ble_wifi": 0.03500000000000003,
+        "arr_mean": 0.017500000000000016
+      }
+    ],
+    "recommended_range": {
+      "mode": "constraint_based",
+      "dt_min_ms": 30,
+      "dt_max_ms": 40
+    }
+  },
+  "s4": {
+    "metadata": {
+      "batch_id": 1001,
+      "anchoring_model": "anchorBatch(bytes32 merkleRoot, uint256 batchId)",
+      "notes": [
+        "All audit scenarios retrieve the Merkle root through batch_id from the anchoring registry.",
+        "Proof-content tampering is modeled by mutating the proof object and recomputing the corresponding leaf commitment.",
+        "The missing-proof scenario models a proof that was accepted but deliberately excluded from the on-chain batch. The auditor queries a batch_id that was never committed (missing_anchor), demonstrating that omission is detectable via the registry.",
+        "Complexity is validated via Merkle path length growth with batch size.",
+        "In the left panel, the valid-proof bar reports acceptance rate, whereas the other five bars report detection rate."
+      ]
+    },
+    "scenario_rows": [
+      {
+        "scenario": "valid_proof",
+        "trials": 128,
+        "accept_rate": 1.0,
+        "detection_rate": 0.0,
+        "reason_counts": {
+          "accept": 128
+        }
+      },
+      {
+        "scenario": "mutated_claim_location",
+        "trials": 128,
+        "accept_rate": 0.0,
+        "detection_rate": 1.0,
+        "reason_counts": {
+          "merkle_mismatch": 128
+        }
+      },
+      {
+        "scenario": "mutated_witness_timestamp",
+        "trials": 128,
+        "accept_rate": 0.0,
+        "detection_rate": 1.0,
+        "reason_counts": {
+          "merkle_mismatch": 128
+        }
+      },
+      {
+        "scenario": "missing_proof_record",
+        "trials": 128,
+        "accept_rate": 0.0,
+        "detection_rate": 1.0,
+        "reason_counts": {
+          "missing_anchor": 128
+        }
+      },
+      {
+        "scenario": "wrong_merkle_path",
+        "trials": 128,
+        "accept_rate": 0.0,
+        "detection_rate": 1.0,
+        "reason_counts": {
+          "merkle_mismatch": 128
+        }
+      },
+      {
+        "scenario": "wrong_root_mapping",
+        "trials": 128,
+        "accept_rate": 0.0,
+        "detection_rate": 1.0,
+        "reason_counts": {
+          "merkle_mismatch": 128
+        }
+      }
+    ],
+    "complexity_rows": [
+      {
+        "batch_size": 8,
+        "avg_path_length": 3,
+        "expected_log2": 3,
+        "avg_elapsed_ms": 0.016932346625253558
+      },
+      {
+        "batch_size": 16,
+        "avg_path_length": 4,
+        "expected_log2": 4,
+        "avg_elapsed_ms": 0.012825301382690668
+      },
+      {
+        "batch_size": 32,
+        "avg_path_length": 5,
+        "expected_log2": 5,
+        "avg_elapsed_ms": 0.023312531993724406
+      },
+      {
+        "batch_size": 64,
+        "avg_path_length": 6,
+        "expected_log2": 6,
+        "avg_elapsed_ms": 0.0413490051869303
+      },
+      {
+        "batch_size": 128,
+        "avg_path_length": 7,
+        "expected_log2": 7,
+        "avg_elapsed_ms": 0.08393223106395453
+      },
+      {
+        "batch_size": 256,
+        "avg_path_length": 8,
+        "expected_log2": 8,
+        "avg_elapsed_ms": 0.183342577656731
+      },
+      {
+        "batch_size": 512,
+        "avg_path_length": 9,
+        "expected_log2": 9,
+        "avg_elapsed_ms": 0.3100481553701684
+      },
+      {
+        "batch_size": 1024,
+        "avg_path_length": 10,
+        "expected_log2": 10,
+        "avg_elapsed_ms": 0.6378958787536249
+      },
+      {
+        "batch_size": 2048,
+        "avg_path_length": 11,
+        "expected_log2": 11,
+        "avg_elapsed_ms": 1.2641535067814402
+      }
+    ]
+  },
   "f1": {
     "metadata": {
       "n_w": 4,
@@ -428,6 +915,393 @@
       }
     }
   },
+  "s5": {
+    "metadata": {
+      "deployment_strategy": "Uniform Grid",
+      "deployment_count": 6000,
+      "attack_trials": 200,
+      "replay_trials": 200,
+      "legitimate_trials": 2052,
+      "d_ble": 100.0,
+      "d_th": 100.0,
+      "tau_rssi": -90.0,
+      "delta_t_max_ms": 35.0,
+      "baselines": {
+        "GPS-only": "Server-side geofence and time-window validation only; no witness attestations or replay-state tracking.",
+        "Simple PoL": "Single-witness proximity proof with witness-side checks, but without replay-state enforcement or anchoring.",
+        "Proposed": "Full protocol with N_w=4, replay-state enforcement, and anchoring support."
+      },
+      "notes": [
+        "Baseline comparison uses the F1-recommended deployment so that the schemes are compared under the same operational witness layout.",
+        "Replay comparison uses exact same-proof resubmission as the representative anti-replay stress case.",
+        "Collusion comparison models prover-prover collusion as BLE+BLE forwarding under the common delta_t_max threshold.",
+        "LAR denotes Legitimate Acceptance Rate."
+      ]
+    },
+    "rows": [
+      {
+        "scheme": "GPS-only",
+        "lar": 1.0,
+        "spoofing_attack_success_rate": 1.0,
+        "replay_attack_success_rate": 1.0,
+        "collusion_attack_success_rate": 1.0
+      },
+      {
+        "scheme": "Simple PoL",
+        "lar": 1.0,
+        "spoofing_attack_success_rate": 0.0,
+        "replay_attack_success_rate": 1.0,
+        "collusion_attack_success_rate": 0.515
+      },
+      {
+        "scheme": "Proposed",
+        "lar": 0.9532163742690059,
+        "spoofing_attack_success_rate": 0.0,
+        "replay_attack_success_rate": 0.0,
+        "collusion_attack_success_rate": 0.005
+      }
+    ],
+    "attack_rows": [
+      {
+        "scheme": "GPS-only",
+        "attack": "spoofing",
+        "attack_success_rate": 1.0
+      },
+      {
+        "scheme": "GPS-only",
+        "attack": "replay",
+        "attack_success_rate": 1.0
+      },
+      {
+        "scheme": "GPS-only",
+        "attack": "collusion",
+        "attack_success_rate": 1.0
+      },
+      {
+        "scheme": "Simple PoL",
+        "attack": "spoofing",
+        "attack_success_rate": 0.0
+      },
+      {
+        "scheme": "Simple PoL",
+        "attack": "replay",
+        "attack_success_rate": 1.0
+      },
+      {
+        "scheme": "Simple PoL",
+        "attack": "collusion",
+        "attack_success_rate": 0.515
+      },
+      {
+        "scheme": "Proposed",
+        "attack": "spoofing",
+        "attack_success_rate": 0.0
+      },
+      {
+        "scheme": "Proposed",
+        "attack": "replay",
+        "attack_success_rate": 0.0
+      },
+      {
+        "scheme": "Proposed",
+        "attack": "collusion",
+        "attack_success_rate": 0.005
+      }
+    ]
+  },
+  "f2": {
+    "metadata": {
+      "deployment_strategy": "Uniform Grid",
+      "deployment_count": 6000,
+      "n_w": 4,
+      "d_ble": 100.0,
+      "d_th": 100.0,
+      "tau_rssi": -90.0,
+      "delta_t_max_ms": 35.0,
+      "notes": [
+        "F2 counts witness-side proof requests only; it does not model queues, retries, or service delays.",
+        "Load is reported as requests per witness per hour over the simulated trace duration."
+      ]
+    },
+    "rows": [
+      {
+        "label": "c10",
+        "peak_concurrent_vehs": 11,
+        "max_requests_per_hour": 3.440860215053763,
+        "p95_requests_per_hour": 3.440860215053763,
+        "mean_nonzero_requests_per_hour": 1.8173011721398815,
+        "hotspots": [
+          {
+            "witness_id": "W_10681699608",
+            "lat": 58.38215166017713,
+            "lon": 26.6945356694089,
+            "requests_per_hour": 3.441
+          },
+          {
+            "witness_id": "W_11806589020",
+            "lat": 58.37929316908582,
+            "lon": 26.74220227215852,
+            "requests_per_hour": 3.441
+          },
+          {
+            "witness_id": "W_11806589027",
+            "lat": 58.37935616017701,
+            "lon": 26.742128115429075,
+            "requests_per_hour": 3.441
+          },
+          {
+            "witness_id": "W_11806589040",
+            "lat": 58.379364729706275,
+            "lon": 26.74214651996721,
+            "requests_per_hour": 3.441
+          },
+          {
+            "witness_id": "W_11806603758",
+            "lat": 58.38006750736663,
+            "lon": 26.74217661735583,
+            "requests_per_hour": 3.441
+          },
+          {
+            "witness_id": "W_11990537139",
+            "lat": 58.37472339689479,
+            "lon": 26.77971759977122,
+            "requests_per_hour": 3.441
+          },
+          {
+            "witness_id": "W_11990537146",
+            "lat": 58.37437880536104,
+            "lon": 26.779631015257976,
+            "requests_per_hour": 3.441
+          },
+          {
+            "witness_id": "W_1258704936",
+            "lat": 58.37602076958017,
+            "lon": 26.71747644705251,
+            "requests_per_hour": 3.441
+          },
+          {
+            "witness_id": "W_1914548352",
+            "lat": 58.363376953805435,
+            "lon": 26.688178839765165,
+            "requests_per_hour": 3.441
+          },
+          {
+            "witness_id": "W_330040495",
+            "lat": 58.38206337087972,
+            "lon": 26.694610819632835,
+            "requests_per_hour": 3.441
+          }
+        ]
+      },
+      {
+        "label": "c50",
+        "peak_concurrent_vehs": 52,
+        "max_requests_per_hour": 8.370146477563358,
+        "p95_requests_per_hour": 5.0220878865380145,
+        "mean_nonzero_requests_per_hour": 2.231727671305676,
+        "hotspots": [
+          {
+            "witness_id": "W_12142638065",
+            "lat": 58.37046731933182,
+            "lon": 26.70099540440697,
+            "requests_per_hour": 8.37
+          },
+          {
+            "witness_id": "W_cluster_12142638064_330045648",
+            "lat": 58.37046943606786,
+            "lon": 26.70128668289732,
+            "requests_per_hour": 8.37
+          },
+          {
+            "witness_id": "W_10882884663",
+            "lat": 58.367148267945666,
+            "lon": 26.693925497261837,
+            "requests_per_hour": 6.696
+          },
+          {
+            "witness_id": "W_10921776931",
+            "lat": 58.38606966206712,
+            "lon": 26.726185703168262,
+            "requests_per_hour": 6.696
+          },
+          {
+            "witness_id": "W_11861679088",
+            "lat": 58.36139086780023,
+            "lon": 26.737927716248883,
+            "requests_per_hour": 6.696
+          },
+          {
+            "witness_id": "W_12097272436",
+            "lat": 58.37800352618036,
+            "lon": 26.728941548565146,
+            "requests_per_hour": 6.696
+          },
+          {
+            "witness_id": "W_12142638066",
+            "lat": 58.37072130433198,
+            "lon": 26.700835469677248,
+            "requests_per_hour": 6.696
+          },
+          {
+            "witness_id": "W_3029578405",
+            "lat": 58.38304632804246,
+            "lon": 26.757633602709728,
+            "requests_per_hour": 6.696
+          },
+          {
+            "witness_id": "W_6304257809",
+            "lat": 58.37718482922674,
+            "lon": 26.683466530547314,
+            "requests_per_hour": 6.696
+          },
+          {
+            "witness_id": "W_6304257810",
+            "lat": 58.37718481198399,
+            "lon": 26.683568606473557,
+            "requests_per_hour": 6.696
+          }
+        ]
+      },
+      {
+        "label": "c100",
+        "peak_concurrent_vehs": 93,
+        "max_requests_per_hour": 18.88111888111888,
+        "p95_requests_per_hour": 6.293706293706294,
+        "mean_nonzero_requests_per_hour": 2.788906009244992,
+        "hotspots": [
+          {
+            "witness_id": "W_12097272436",
+            "lat": 58.37800352618036,
+            "lon": 26.728941548565146,
+            "requests_per_hour": 18.881
+          },
+          {
+            "witness_id": "W_6854135410",
+            "lat": 58.37803276996132,
+            "lon": 26.729009376312842,
+            "requests_per_hour": 18.881
+          },
+          {
+            "witness_id": "W_6854135439",
+            "lat": 58.37817037328188,
+            "lon": 26.72875748532542,
+            "requests_per_hour": 17.308
+          },
+          {
+            "witness_id": "W_9153101260",
+            "lat": 58.3840580811756,
+            "lon": 26.708447450517045,
+            "requests_per_hour": 14.161
+          },
+          {
+            "witness_id": "W_cluster_7563355310_7563355387_956710369",
+            "lat": 58.37607089014305,
+            "lon": 26.74927867966527,
+            "requests_per_hour": 14.161
+          },
+          {
+            "witness_id": "W_11742308427",
+            "lat": 58.37306877940466,
+            "lon": 26.77220068167259,
+            "requests_per_hour": 12.587
+          },
+          {
+            "witness_id": "W_11778781930",
+            "lat": 58.373094713287834,
+            "lon": 26.77259218584759,
+            "requests_per_hour": 12.587
+          },
+          {
+            "witness_id": "W_11780533615",
+            "lat": 58.37640325088397,
+            "lon": 26.762109851093655,
+            "requests_per_hour": 12.587
+          },
+          {
+            "witness_id": "W_6681139737",
+            "lat": 58.384006781067036,
+            "lon": 26.7084406912024,
+            "requests_per_hour": 12.587
+          },
+          {
+            "witness_id": "W_330044522",
+            "lat": 58.37906797445896,
+            "lon": 26.758883975506457,
+            "requests_per_hour": 11.014
+          }
+        ]
+      },
+      {
+        "label": "c200",
+        "peak_concurrent_vehs": 176,
+        "max_requests_per_hour": 30.476190476190474,
+        "p95_requests_per_hour": 9.142857142857142,
+        "mean_nonzero_requests_per_hour": 4.008999708832949,
+        "hotspots": [
+          {
+            "witness_id": "W_12097272436",
+            "lat": 58.37800352618036,
+            "lon": 26.728941548565146,
+            "requests_per_hour": 30.476
+          },
+          {
+            "witness_id": "W_6854135410",
+            "lat": 58.37803276996132,
+            "lon": 26.729009376312842,
+            "requests_per_hour": 30.476
+          },
+          {
+            "witness_id": "W_6854135439",
+            "lat": 58.37817037328188,
+            "lon": 26.72875748532542,
+            "requests_per_hour": 27.429
+          },
+          {
+            "witness_id": "W_6173231682",
+            "lat": 58.37252085565619,
+            "lon": 26.758210607504772,
+            "requests_per_hour": 21.333
+          },
+          {
+            "witness_id": "W_6854135430",
+            "lat": 58.37809336156093,
+            "lon": 26.729503230166245,
+            "requests_per_hour": 18.286
+          },
+          {
+            "witness_id": "W_8760610250",
+            "lat": 58.36901489042799,
+            "lon": 26.730915262412253,
+            "requests_per_hour": 18.286
+          },
+          {
+            "witness_id": "W_cluster_10681699633_418438750",
+            "lat": 58.38328080931776,
+            "lon": 26.691979218538638,
+            "requests_per_hour": 18.286
+          },
+          {
+            "witness_id": "W_11748506178",
+            "lat": 58.37009835769812,
+            "lon": 26.77349473886066,
+            "requests_per_hour": 16.762
+          },
+          {
+            "witness_id": "W_11838366403",
+            "lat": 58.383323085223715,
+            "lon": 26.691781161508477,
+            "requests_per_hour": 16.762
+          },
+          {
+            "witness_id": "W_12120437728",
+            "lat": 58.37802573512257,
+            "lon": 26.683850555826975,
+            "requests_per_hour": 16.762
+          }
+        ]
+      }
+    ]
+  },
   "f3": {
     "metadata": {
       "deployment_strategy": "Uniform Grid",
@@ -451,35 +1325,35 @@
         "expected_batch_size": 24,
         "gas_per_proof": 1708.3333333333333,
         "avg_anchor_delay_s": 30.0,
-        "avg_build_time_ms": 0.018399994587525725
+        "avg_build_time_ms": 0.016191555187106133
       },
       {
         "batch_minutes": 5,
         "expected_batch_size": 122,
         "gas_per_proof": 336.0655737704918,
         "avg_anchor_delay_s": 150.0,
-        "avg_build_time_ms": 0.0750665960367769
+        "avg_build_time_ms": 0.0742834061384201
       },
       {
         "batch_minutes": 15,
         "expected_batch_size": 365,
         "gas_per_proof": 112.32876712328768,
         "avg_anchor_delay_s": 450.0,
-        "avg_build_time_ms": 0.22315800306387246
+        "avg_build_time_ms": 0.20853332243859768
       },
       {
         "batch_minutes": 30,
         "expected_batch_size": 730,
         "gas_per_proof": 56.16438356164384,
         "avg_anchor_delay_s": 900.0,
-        "avg_build_time_ms": 0.7276252028532326
+        "avg_build_time_ms": 0.861233239993453
       },
       {
         "batch_minutes": 60,
         "expected_batch_size": 1459,
         "gas_per_proof": 28.10143934201508,
         "avg_anchor_delay_s": 1800.0,
-        "avg_build_time_ms": 1.3266499852761626
+        "avg_build_time_ms": 1.936033135280013
       }
     ],
     "recommended_range": {

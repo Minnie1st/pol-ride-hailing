@@ -5,7 +5,7 @@
     "notes": [
       "All audit scenarios retrieve the Merkle root through batch_id from the anchoring registry.",
       "Proof-content tampering is modeled by mutating the proof object and recomputing the corresponding leaf commitment.",
-      "The missing-proof scenario models audit failure when the platform cannot return the off-chain proof record.",
+      "The missing-proof scenario models a proof that was accepted but deliberately excluded from the on-chain batch. The auditor queries a batch_id that was never committed (missing_anchor), demonstrating that omission is detectable via the registry.",
       "Complexity is validated via Merkle path length growth with batch size.",
       "In the left panel, the valid-proof bar reports acceptance rate, whereas the other five bars report detection rate."
     ]
@@ -44,7 +44,7 @@
       "accept_rate": 0.0,
       "detection_rate": 1.0,
       "reason_counts": {
-        "proof_unavailable": 128
+        "missing_anchor": 128
       }
     },
     {
@@ -71,55 +71,55 @@
       "batch_size": 8,
       "avg_path_length": 3,
       "expected_log2": 3,
-      "avg_elapsed_ms": 0.007104245014488697
+      "avg_elapsed_ms": 0.016932346625253558
     },
     {
       "batch_size": 16,
       "avg_path_length": 4,
       "expected_log2": 4,
-      "avg_elapsed_ms": 0.012258000424480997
+      "avg_elapsed_ms": 0.012825301382690668
     },
     {
       "batch_size": 32,
       "avg_path_length": 5,
       "expected_log2": 5,
-      "avg_elapsed_ms": 0.021936281882517505
+      "avg_elapsed_ms": 0.023312531993724406
     },
     {
       "batch_size": 64,
       "avg_path_length": 6,
       "expected_log2": 6,
-      "avg_elapsed_ms": 0.03923437270714203
+      "avg_elapsed_ms": 0.0413490051869303
     },
     {
       "batch_size": 128,
       "avg_path_length": 7,
       "expected_log2": 7,
-      "avg_elapsed_ms": 0.07390484279312659
+      "avg_elapsed_ms": 0.08393223106395453
     },
     {
       "batch_size": 256,
       "avg_path_length": 8,
       "expected_log2": 8,
-      "avg_elapsed_ms": 0.14427722089749295
+      "avg_elapsed_ms": 0.183342577656731
     },
     {
       "batch_size": 512,
       "avg_path_length": 9,
       "expected_log2": 9,
-      "avg_elapsed_ms": 0.28339199980109697
+      "avg_elapsed_ms": 0.3100481553701684
     },
     {
       "batch_size": 1024,
       "avg_path_length": 10,
       "expected_log2": 10,
-      "avg_elapsed_ms": 0.5755326574217179
+      "avg_elapsed_ms": 0.6378958787536249
     },
     {
       "batch_size": 2048,
       "avg_path_length": 11,
       "expected_log2": 11,
-      "avg_elapsed_ms": 1.1443411895015743
+      "avg_elapsed_ms": 1.2641535067814402
     }
   ]
 }
