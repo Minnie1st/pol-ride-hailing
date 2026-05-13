@@ -626,14 +626,20 @@ def evaluate_event_set(
     reason_counts = Counter()
     per_event_total = Counter()
     per_event_accept = Counter()
+    trip_events_seen = defaultdict(set)
+    trip_events_accepted = defaultdict(set)
 
     for idx, event in enumerate(events):
         outcome = run_full_protocol(event, witness_index, params, base_seed, tag, idx)
         total += 1
-        per_event_total[event["event"]] += 1
+        event_name = event["event"]
+        order_id = event["order_id"]
+        per_event_total[event_name] += 1
+        trip_events_seen[order_id].add(event_name)
         if outcome["accepted"]:
             accepted += 1
-            per_event_accept[event["event"]] += 1
+            per_event_accept[event_name] += 1
+            trip_events_accepted[order_id].add(event_name)
         else:
             stage_counts[outcome["stage"]] += 1
             reason_counts[f"{outcome['stage']}:{outcome['reason']}"] += 1
@@ -646,11 +652,35 @@ def evaluate_event_set(
         )
         for name in EVENT_ORDER
     }
+    required_events = set(EVENT_ORDER)
+    total_trips = len(trip_events_seen)
+    successful_trips = sum(
+        1
+        for order_id, seen_events in trip_events_seen.items()
+        if required_events.issubset(seen_events)
+        and required_events.issubset(trip_events_accepted[order_id])
+    )
+    incomplete_trips = sum(
+        1
+        for seen_events in trip_events_seen.values()
+        if not required_events.issubset(seen_events)
+    )
+    trip_proof_count_distribution = Counter(
+        len(trip_events_accepted[order_id] & required_events)
+        for order_id in trip_events_seen
+    )
     return {
         "accepted_events": accepted,
         "total_events": total,
         "overall_psr": accepted / total if total else 0.0,
         "per_event_psr": per_event_psr,
+        "successful_trips": successful_trips,
+        "total_trips": total_trips,
+        "trip_success_rate": successful_trips / total_trips if total_trips else 0.0,
+        "incomplete_trips": incomplete_trips,
+        "trip_proof_count_distribution": dict(
+            sorted(trip_proof_count_distribution.items())
+        ),
         "rejection_stage_counts": dict(stage_counts),
         "rejection_reason_counts": dict(reason_counts),
     }
@@ -2298,13 +2328,19 @@ def experiment_f1(
                 "accepted_events": summary["accepted_events"],
                 "total_events": summary["total_events"],
                 "per_event_psr": summary["per_event_psr"],
+                "trip_success_rate": summary["trip_success_rate"],
+                "successful_trips": summary["successful_trips"],
+                "total_trips": summary["total_trips"],
+                "incomplete_trips": summary["incomplete_trips"],
+                "trip_proof_count_distribution": summary["trip_proof_count_distribution"],
                 "rejection_stage_counts": summary["rejection_stage_counts"],
                 "rejection_reason_counts": summary["rejection_reason_counts"],
             }
             rows.append(row)
             print(
                 f"  {STRATEGY_LABELS[strategy]:14s} @ {len(deployment):4d}: "
-                f"PSR={row['overall_psr']:.1%}"
+                f"event PSR={row['overall_psr']:.1%}, "
+                f"trip SR={row['trip_success_rate']:.1%}"
             )
 
     recommendation = choose_recommended_deployment(rows)
@@ -2402,7 +2438,7 @@ def experiment_f1(
         color="black",
     )
     ax.set_xlabel("Witness Count", fontfamily="Times New Roman", fontsize=11.5)
-    ax.set_ylabel("Proof Success Rate (%)", fontfamily="Times New Roman", fontsize=11.5)
+    ax.set_ylabel("Event-level Proof Success Rate (%)", fontfamily="Times New Roman", fontsize=11.5)
     ax.set_ylim(0, 105)
     ax.set_xlim(min(args.f1_counts) - 250, max(args.f1_counts) + 250)
     ax.set_xticks(args.f1_counts)
@@ -2421,13 +2457,13 @@ def experiment_f1(
         recommendation_label = (
             f"{recommended_row['strategy_label']} first exceeds 95% PSR\n"
             f"at {recommended_row['witness_count']:,} witnesses "
-            f"(PSR = {recommended_row['overall_psr'] * 100:.1f}%)"
+            f"(event PSR = {recommended_row['overall_psr'] * 100:.1f}%)"
         )
     else:
         recommendation_label = (
             f"Best available deployment: {recommended_row['strategy_label']}\n"
             f"at {recommended_row['witness_count']:,} witnesses "
-            f"(PSR = {recommended_row['overall_psr'] * 100:.1f}%)"
+            f"(event PSR = {recommended_row['overall_psr'] * 100:.1f}%)"
         )
 
     x_min = min(args.f1_counts)
@@ -2513,6 +2549,11 @@ def experiment_f1(
             "accepted_events",
             "total_events",
             "per_event_psr",
+            "trip_success_rate",
+            "successful_trips",
+            "total_trips",
+            "incomplete_trips",
+            "trip_proof_count_distribution",
             "rejection_stage_counts",
             "rejection_reason_counts",
         ],
@@ -2525,6 +2566,14 @@ def experiment_f1(
                 "accepted_events": row["accepted_events"],
                 "total_events": row["total_events"],
                 "per_event_psr": json.dumps(row["per_event_psr"], sort_keys=True),
+                "trip_success_rate": round(row["trip_success_rate"], 6),
+                "successful_trips": row["successful_trips"],
+                "total_trips": row["total_trips"],
+                "incomplete_trips": row["incomplete_trips"],
+                "trip_proof_count_distribution": json.dumps(
+                    row["trip_proof_count_distribution"],
+                    sort_keys=True,
+                ),
                 "rejection_stage_counts": json.dumps(row["rejection_stage_counts"], sort_keys=True),
                 "rejection_reason_counts": json.dumps(row["rejection_reason_counts"], sort_keys=True),
             }
@@ -2534,7 +2583,8 @@ def experiment_f1(
     print(
         f"  Recommended deployment: {recommended_row['strategy_label']} @ "
         f"{recommended_row['witness_count']} witnesses "
-        f"({recommendation['mode']}, PSR={recommended_row['overall_psr']:.1%})"
+        f"({recommendation['mode']}, event PSR={recommended_row['overall_psr']:.1%}, "
+        f"trip SR={recommended_row['trip_success_rate']:.1%})"
     )
     return payload
 
